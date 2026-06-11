@@ -1243,6 +1243,170 @@ body {
 }
 .share-actions .btn-copy:hover { background: var(--gold-light); }
 
+/* ===== REVIEW MODE ===== */
+.review-toggle {
+  text-align: center;
+  margin: 12px 0;
+}
+.review-toggle button {
+  padding: 6px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82em;
+  transition: var(--transition);
+}
+.review-toggle button:hover { background: rgba(123,94,167,0.15); }
+.review-toggle button.active { background: var(--accent); color: #fff; }
+
+.review-timeline {
+  max-width: 600px;
+  margin: 20px auto;
+  padding-left: 20px;
+  border-left: 2px solid rgba(212,168,67,0.3);
+}
+.review-timeline-item {
+  position: relative;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  background: var(--bg-panel);
+  border-radius: 10px;
+  border: 1px solid rgba(212,168,67,0.1);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.review-timeline-item:hover { border-color: var(--gold); }
+.review-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--bg);
+}
+.review-timeline-item .tl-time {
+  font-size: 0.78em;
+  color: var(--text-dim);
+}
+.review-timeline-item .tl-cards {
+  font-size: 0.88em;
+  color: var(--text);
+  margin-top: 4px;
+}
+.review-trend {
+  max-width: 600px;
+  margin: 16px auto;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(212,168,67,0.06), rgba(140,100,220,0.06));
+  border-radius: 12px;
+  border: 1px solid rgba(212,168,67,0.2);
+}
+.review-trend h4 {
+  color: var(--gold-light);
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+/* ===== ADVANCED FILTER ===== */
+.adv-filter-toggle {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.adv-filter-toggle button {
+  padding: 4px 14px;
+  border-radius: 14px;
+  border: 1px dashed rgba(212,168,67,0.3);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.78em;
+  transition: var(--transition);
+}
+.adv-filter-toggle button:hover { border-color: var(--gold); color: var(--gold-light); }
+.adv-filter-toggle button.active { border-style: solid; border-color: var(--accent); color: var(--accent); }
+
+.adv-filter-panel {
+  max-width: 600px;
+  margin: 0 auto 12px;
+  padding: 12px 16px;
+  background: rgba(31,17,64,0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(212,168,67,0.15);
+  display: none;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.adv-filter-panel.visible { display: flex; }
+.adv-filter-panel label {
+  color: var(--text-dim);
+  font-size: 0.78em;
+}
+.adv-filter-panel input, .adv-filter-panel select {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(212,168,67,0.2);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.8em;
+  outline: none;
+}
+.adv-filter-panel input:focus, .adv-filter-panel select:focus { border-color: var(--gold); }
+.adv-filter-panel .adv-reset {
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(231,76,60,0.4);
+  background: transparent;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 0.78em;
+  font-family: inherit;
+  transition: var(--transition);
+}
+.adv-filter-panel .adv-reset:hover { background: rgba(231,76,60,0.1); }
+
+/* ===== PER-CARD NOTE ===== */
+.card-note-input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(140,100,220,0.2);
+  background: rgba(0,0,0,0.2);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.78em;
+  resize: none;
+  min-height: 32px;
+  outline: none;
+  transition: var(--transition);
+  margin-top: 4px;
+}
+.card-note-input:focus { border-color: var(--accent); color: var(--text); }
+.card-note-input::placeholder { color: rgba(153,136,184,0.5); }
+
+/* ===== SHARE NOTE TOGGLE ===== */
+.share-note-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+  color: var(--text-dim);
+  font-size: 0.8em;
+}
+.share-note-toggle input[type="checkbox"] {
+  accent-color: var(--gold);
+}
+
 /* ===== POINTS ===== */
 .points {
   color: var(--text-dim);
@@ -1348,6 +1512,21 @@ body {
       <button class="filter-btn" data-filter="favorites" onclick="setHistoryFilter('favorites', this)">⭐ 收藏</button>
       <input type="text" class="filter-search" id="historySearch" placeholder="🔍 搜索主题..." oninput="onHistorySearch()" />
       <span class="filter-count" id="historyCount"></span>
+    </div>
+    <div class="adv-filter-toggle">
+      <button id="advFilterBtn" onclick="toggleAdvFilter()">🔧 高级筛选</button>
+    </div>
+    <div class="adv-filter-panel" id="advFilterPanel">
+      <label>从</label><input type="date" id="advDateFrom" onchange="onAdvFilterChange()" />
+      <label>到</label><input type="date" id="advDateTo" onchange="onAdvFilterChange()" />
+      <label>含牌</label><input type="text" id="advCardName" placeholder="牌名关键词" oninput="onAdvFilterChange()" style="width:100px;" />
+      <select id="advOrientation" onchange="onAdvFilterChange()">
+        <option value="all">全部正逆位</option>
+        <option value="all-upright">全部正位</option>
+        <option value="all-reversed">全部逆位</option>
+        <option value="mixed">有正有逆</option>
+      </select>
+      <button class="adv-reset" onclick="resetAdvFilter()">清除高级筛选</button>
     </div>
     <div class="history-list" id="historyList"></div>
     <button class="clear-btn" onclick="clearHistory()">🗑️ 清除所有记录</button>
@@ -1585,6 +1764,12 @@ let spreadReadingTemplate = null;
 let spreadReadingCells = [];
 let spreadReadingTopic = '';
 let historyFilter = 'all';
+let advFilterOpen = false;
+let advDateFrom = '';
+let advDateTo = '';
+let advCardName = '';
+let advOrientation = 'all';
+let reviewMode = false;
 
 // ==================== INIT ====================
 function init() {
@@ -1640,6 +1825,26 @@ function restoreHistoryFilter() {
     const searchEl = document.getElementById('historySearch');
     if (searchEl) searchEl.value = state.search;
   }
+  if (state.advFilterOpen) {
+    advFilterOpen = state.advFilterOpen;
+    const panel = document.getElementById('advFilterPanel');
+    const btn = document.getElementById('advFilterBtn');
+    if (panel) panel.classList.toggle('visible', advFilterOpen);
+    if (btn) btn.classList.toggle('active', advFilterOpen);
+  }
+  advDateFrom = state.advDateFrom || '';
+  advDateTo = state.advDateTo || '';
+  advCardName = state.advCardName || '';
+  advOrientation = state.advOrientation || 'all';
+  const elFrom = document.getElementById('advDateFrom');
+  const elTo = document.getElementById('advDateTo');
+  const elCard = document.getElementById('advCardName');
+  const elOrient = document.getElementById('advOrientation');
+  if (elFrom) elFrom.value = advDateFrom;
+  if (elTo) elTo.value = advDateTo;
+  if (elCard) elCard.value = advCardName;
+  if (elOrient) elOrient.value = advOrientation;
+  reviewMode = state.reviewMode || false;
 }
 
 function createStars() {
@@ -1948,6 +2153,7 @@ function saveReading(positions) {
     summary: summary,
     favorite: false,
     note: '',
+    cardNotes: summaryCards.map(() => ''),
     cards: summaryCards
   });
   if (records.length > 100) records.length = 100;
@@ -1977,6 +2183,37 @@ function renderHistory() {
     records = records.filter(r => (r.topic || '').toLowerCase().includes(searchTerm));
   }
 
+  if (advDateFrom) {
+    records = records.filter(r => {
+      const d = new Date(r.time);
+      const from = new Date(advDateFrom);
+      return d >= from;
+    });
+  }
+  if (advDateTo) {
+    records = records.filter(r => {
+      const d = new Date(r.time);
+      const to = new Date(advDateTo + 'T23:59:59');
+      return d <= to;
+    });
+  }
+  if (advCardName) {
+    const kw = advCardName.toLowerCase();
+    records = records.filter(r => r.cards.some(c => c.name.toLowerCase().includes(kw)));
+  }
+  if (advOrientation !== 'all') {
+    records = records.filter(r => {
+      if (advOrientation === 'all-upright') return r.cards.every(c => !(c.isReversed || c.reversed));
+      if (advOrientation === 'all-reversed') return r.cards.every(c => !!(c.isReversed || c.reversed));
+      if (advOrientation === 'mixed') {
+        const hasUp = r.cards.some(c => !(c.isReversed || c.reversed));
+        const hasRev = r.cards.some(c => !!(c.isReversed || c.reversed));
+        return hasUp && hasRev;
+      }
+      return true;
+    });
+  }
+
   if (countEl) {
     countEl.textContent = records.length > 0 ? `共 ${records.length} 条` : '';
   }
@@ -1995,6 +2232,7 @@ function renderHistory() {
       ${r.topic ? `<div class="history-topic">主题：<span>${r.topic}</span></div>` : ''}
       <div class="history-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${(c.isReversed || c.reversed) ? '逆' : '正'})`).join(' · ')}</div>
       ${r.note ? `<div class="points">💬 ${r.note.substring(0, 40)}${r.note.length > 40 ? '...' : ''}</div>` : ''}
+      ${(!r.note && r.cardNotes && r.cardNotes.some(n => n)) ? `<div class="points">💬 有牌面复盘备注</div>` : ''}
     </div>
   `).join('');
 }
@@ -2025,6 +2263,13 @@ function viewHistoryDetail(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-divination').classList.add('active');
 
+  const sameTopicRecords = record.topic
+    ? records.filter(r => r.id != record.id && r.topic === record.topic).sort((a, b) => a.id - b.id)
+    : [];
+  const hasSameTopic = sameTopicRecords.length > 0;
+
+  if (!record.cardNotes) record.cardNotes = drawnCards.map(() => '');
+
   const resultArea = document.getElementById('resultArea');
   resultArea.innerHTML = `
     <h3 style="text-align:center;color:var(--text-dim);margin-bottom:16px;">
@@ -2046,15 +2291,18 @@ function viewHistoryDetail(id) {
       <button class="fav-star ${record.favorite ? 'active' : ''}" onclick="toggleFavorite('${record.id}')" style="font-size:1.5em;">${record.favorite ? '★' : '☆'}</button>
       <span style="color:var(--text-dim);font-size:0.8em;margin-left:6px;">${record.favorite ? '已收藏' : '点击收藏'}</span>
     </div>
+    ${hasSameTopic ? `<div class="review-toggle"><button id="reviewToggleBtn" onclick="toggleReviewMode('${record.id}')">📊 复盘模式 · 同主题 ${sameTopicRecords.length + 1} 次占卜</button></div>` : ''}
     <div class="card-interpretation">
       ${drawnCards.map((card, i) => {
         const desc = record.cards[i].description;
+        const cn = record.cardNotes[i] || '';
         return `
           <div style="margin-bottom:18px;">
             <div class="card-title">${record.cards[i].position} · ${card.name}</div>
             ${desc ? `<div class="position-desc">💡 ${desc}</div>` : ''}
             ${getOrientationBadge(card.isReversed)}
             <div class="meaning-text">${getCardMeaning(card)}</div>
+            <textarea class="card-note-input" placeholder="💬 给这张牌写句复盘感想..." onchange="updateCardNote('${record.id}', ${i}, this.value)">${cn}</textarea>
           </div>
         `;
       }).join('')}
@@ -2065,12 +2313,13 @@ function viewHistoryDetail(id) {
       </div>
     ` : ''}
     <div class="note-area" style="max-width:600px;margin:12px auto;">
-      <textarea placeholder="写下你的感想备注..." onchange="updateNote('${record.id}', this.value)">${record.note || ''}</textarea>
+      <textarea placeholder="写下整体的感想备注..." onchange="updateNote('${record.id}', this.value)">${record.note || ''}</textarea>
     </div>
     <div style="text-align:center;margin-top:8px;">
       <button class="export-btn" onclick="exportHistoryCard('${record.id}')">📋 导出分享卡片</button>
       <button class="export-btn" style="margin-left:8px;" onclick="goBackToHistory()">📜 返回历史列表</button>
     </div>
+    <div id="reviewTimelineArea"></div>
   `;
   resultArea.classList.add('show');
 }
@@ -2122,13 +2371,118 @@ function updateNote(id, value) {
   localStorage.setItem('tarotHistory', JSON.stringify(records));
 }
 
+function updateCardNote(id, cardIndex, value) {
+  const records = getHistory();
+  const idx = records.findIndex(r => r.id == id);
+  if (idx < 0) return;
+  if (!records[idx].cardNotes) records[idx].cardNotes = [];
+  records[idx].cardNotes[cardIndex] = value;
+  localStorage.setItem('tarotHistory', JSON.stringify(records));
+}
+
+function toggleReviewMode(id) {
+  reviewMode = !reviewMode;
+  saveHistoryState(id);
+  viewHistoryDetail(id);
+  if (reviewMode) buildReviewTimeline(id);
+}
+
+function buildReviewTimeline(currentId) {
+  const records = getHistory();
+  const current = records.find(r => r.id == currentId);
+  if (!current || !current.topic) return;
+
+  const sameTopic = records
+    .filter(r => r.topic === current.topic)
+    .sort((a, b) => a.id - b.id);
+
+  const area = document.getElementById('reviewTimelineArea');
+  if (!area) return;
+
+  const trend = generateTrendSummary(sameTopic);
+
+  area.innerHTML = `
+    <h3 style="text-align:center;color:var(--gold-light);margin:24px 0 12px;">📊 复盘时间线 · ${current.topic}</h3>
+    <div class="review-trend">
+      <h4>📈 趋势总结</h4>
+      <div style="color:var(--text);font-size:0.85em;line-height:1.7;">${trend}</div>
+    </div>
+    <div class="review-timeline">
+      ${sameTopic.map(r => {
+        const isCurrent = r.id == currentId;
+        return `
+          <div class="review-timeline-item" onclick="viewHistoryDetail('${r.id}')" style="${isCurrent ? 'border-color:var(--gold);background:rgba(212,168,67,0.08);' : ''}">
+            <div class="tl-time">${isCurrent ? '📍 当前查看' : '📅'} ${r.time}</div>
+            <div style="color:var(--text-dim);font-size:0.75em;">${r.spreadLabel || r.mode} · ${r.favorite ? '⭐ ' : ''}${r.note ? '💬 ' : ''}</div>
+            <div class="tl-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${(c.isReversed || c.reversed) ? '逆' : '正'})`).join(' · ')}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function generateTrendSummary(sameTopicRecords) {
+  if (sameTopicRecords.length <= 1) return '只有一次占卜记录，暂无趋势可分析。';
+
+  const allCards = [];
+  const cardFreq = {};
+  sameTopicRecords.forEach(r => {
+    r.cards.forEach(c => {
+      allCards.push(c);
+      const key = c.name;
+      cardFreq[key] = (cardFreq[key] || 0) + 1;
+    });
+  });
+
+  const totalCards = allCards.length;
+  const uprightCount = allCards.filter(c => !(c.isReversed || c.reversed)).length;
+  const reversedCount = allCards.filter(c => !!(c.isReversed || c.reversed)).length;
+
+  const topCards = Object.entries(cardFreq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const majorCards = allCards.filter(c => {
+    const full = ALL_CARDS.find(fc => fc.name === c.name);
+    return full && full.type === 'major';
+  }).length;
+
+  let summary = '';
+  summary += `共 ${sameTopicRecords.length} 次占卜，抽到 ${totalCards} 张牌，其中正位 ${uprightCount} 张、逆位 ${reversedCount} 张。`;
+
+  if (topCards.length > 0) {
+    summary += `\n\n出现最频繁的牌：${topCards.map(([name, count]) => `【${name}】(${count}次)`).join('、')}。`;
+  }
+
+  if (majorCards > 0) {
+    summary += `\n\n大阿尔卡纳出现了 ${majorCards} 次（占 ${Math.round(majorCards / totalCards * 100)}%），提示人生重要课题正在浮现。`;
+  }
+
+  if (reversedCount > uprightCount) {
+    summary += '\n\n逆位牌占多数，这个主题可能还需要更多反思和内省，注意那些反复出现的阻碍信号。';
+  } else if (uprightCount > reversedCount * 2) {
+    summary += '\n\n正位牌显著居多，能量流动顺畅，这个主题整体呈现积极向上的趋势。';
+  } else {
+    summary += '\n\n正逆位比例接近平衡，这个主题既有顺利的一面也有需要留意的挑战，保持觉察很重要。';
+  }
+
+  return summary;
+}
+
 // ==================== HISTORY STATE PERSISTENCE ====================
 function saveHistoryState(detailId) {
   const searchEl = document.getElementById('historySearch');
   const state = {
     filter: historyFilter,
     search: searchEl ? searchEl.value.trim() : '',
-    detailId: detailId
+    detailId: detailId,
+    advFilterOpen: advFilterOpen,
+    advDateFrom: document.getElementById('advDateFrom')?.value || advDateFrom,
+    advDateTo: document.getElementById('advDateTo')?.value || advDateTo,
+    advCardName: document.getElementById('advCardName')?.value.trim() || advCardName,
+    advOrientation: document.getElementById('advOrientation')?.value || advOrientation,
+    reviewMode: reviewMode
   };
   localStorage.setItem('tarotHistoryState', JSON.stringify(state));
 }
@@ -2143,6 +2497,38 @@ function onHistorySearch() {
   renderHistory();
 }
 
+function toggleAdvFilter() {
+  advFilterOpen = !advFilterOpen;
+  const panel = document.getElementById('advFilterPanel');
+  const btn = document.getElementById('advFilterBtn');
+  if (panel) panel.classList.toggle('visible', advFilterOpen);
+  if (btn) btn.classList.toggle('active', advFilterOpen);
+  saveHistoryState(null);
+}
+
+function onAdvFilterChange() {
+  advDateFrom = document.getElementById('advDateFrom')?.value || '';
+  advDateTo = document.getElementById('advDateTo')?.value || '';
+  advCardName = document.getElementById('advCardName')?.value.trim() || '';
+  advOrientation = document.getElementById('advOrientation')?.value || 'all';
+  saveHistoryState(null);
+  renderHistory();
+}
+
+function resetAdvFilter() {
+  advDateFrom = ''; advDateTo = ''; advCardName = ''; advOrientation = 'all';
+  const elFrom = document.getElementById('advDateFrom');
+  const elTo = document.getElementById('advDateTo');
+  const elCard = document.getElementById('advCardName');
+  const elOrient = document.getElementById('advOrientation');
+  if (elFrom) elFrom.value = '';
+  if (elTo) elTo.value = '';
+  if (elCard) elCard.value = '';
+  if (elOrient) elOrient.value = 'all';
+  saveHistoryState(null);
+  renderHistory();
+}
+
 // ==================== EXPORT / SHARE ====================
 function exportShareCard() {
   const topic = currentTopic || document.getElementById('topicInput').value.trim();
@@ -2150,7 +2536,17 @@ function exportShareCard() {
     ? THREE_CARD_SPREADS[threeCardSpreadType].name
     : '单张牌';
   const date = new Date().toLocaleString('zh-CN');
-  showShareModal(topic, spreadLabel, date, drawnCards);
+  const positions = currentMode === 'three'
+    ? THREE_CARD_SPREADS[threeCardSpreadType].positions
+    : [SINGLE_POSITION];
+  const summaryCards = drawnCards.map((c, i) => ({
+    ...c,
+    position: positions[i].name,
+    description: positions[i].desc,
+    meaning: getCardMeaning(c)
+  }));
+  const summary = generateSummary(topic, spreadLabel, summaryCards);
+  showShareModal(topic, spreadLabel, date, drawnCards, positions, summary);
 }
 
 function exportHistoryCard(id) {
@@ -2159,37 +2555,84 @@ function exportHistoryCard(id) {
   if (!record) return;
   const cards = record.cards.map(c => {
     const full = ALL_CARDS.find(fc => fc.name === c.name);
-    return { ...full, isReversed: !!(c.isReversed || c.reversed), position: c.position };
+    return { ...full, isReversed: !!(c.isReversed || c.reversed), position: c.position, description: c.description || '' };
   });
-  showShareModal(record.topic, record.spreadLabel, record.time, cards);
+  showShareModal(record.topic, record.spreadLabel, record.time, cards, null, record.summary, record);
 }
 
-function showShareModal(topic, spreadLabel, date, cards) {
-  const text = `🔮 塔罗占卜\n━━━━━━━━━━━━━━\n${topic ? `主题：${topic}\n` : ''}牌阵：${spreadLabel}\n日期：${date}\n━━━━━━━━━━━━━━\n${cards.map((c, i) => {
-    const pos = c.position || '启示';
-    const dir = c.isReversed ? '（逆位）' : '（正位）';
-    return `${pos}：${c.emoji} ${c.name} ${dir}\n${c.isReversed ? c.reversed : c.meaning}`;
-  }).join('\n\n')}\n━━━━━━━━━━━━━━\n✦ 神秘塔罗 · 命运之轮转动 ✦`;
+function showShareModal(topic, spreadLabel, date, cards, positions, summary, record) {
+  const hasNotes = record && (record.note || (record.cardNotes && record.cardNotes.some(n => n)));
+
+  const buildText = (includeNotes) => {
+    let txt = `🔮 塔罗占卜\n━━━━━━━━━━━━━━\n`;
+    if (topic) txt += `主题：${topic}\n`;
+    txt += `牌阵：${spreadLabel}\n日期：${date}\n━━━━━━━━━━━━━━\n`;
+    txt += cards.map((c, i) => {
+      const pos = positions ? positions[i].name : (c.position || '启示');
+      const desc = positions ? positions[i].desc : (c.description || '');
+      const dir = c.isReversed ? '（逆位）' : '（正位）';
+      let entry = `${pos}：${c.emoji} ${c.name} ${dir}`;
+      if (desc) entry += `\n💡 ${desc}`;
+      entry += `\n${c.isReversed ? c.reversed : c.meaning}`;
+      if (includeNotes && record && record.cardNotes && record.cardNotes[i]) {
+        entry += `\n💬 ${record.cardNotes[i]}`;
+      }
+      return entry;
+    }).join('\n\n');
+    if (summary) txt += `\n\n---\n📖 整体解读\n${summary}`;
+    if (includeNotes && record && record.note) {
+      txt += `\n\n💬 感想：${record.note}`;
+    }
+    txt += `\n━━━━━━━━━━━━━━\n✦ 神秘塔罗 · 命运之轮转动 ✦`;
+    return txt;
+  };
+
+  let currentIncludeNotes = false;
+  const fullText = buildText(false);
+  const fullTextWithNotes = hasNotes ? buildText(true) : fullText;
 
   const modal = document.getElementById('dailyModal');
   const content = document.getElementById('dailyModalContent');
   content.innerHTML = `
     <h2>📋 分享卡片</h2>
-    <div class="share-card-content">
+    <div class="share-card-content" id="shareCardPreview">
       <div class="share-header">🔮 塔罗占卜</div>
       ${topic ? `<div class="share-topic">主题：${topic}</div>` : ''}
       <div class="share-topic" style="font-size:0.8em;">牌阵：${spreadLabel} · ${date}</div>
       <div class="share-cards">
-        ${cards.map((c, i) => `<div class="share-card-item">${c.emoji} <strong>${c.name}</strong> · ${c.position || '启示'} <span style="color:${c.isReversed ? '#e74c3c' : '#2ecc71'};">${c.isReversed ? '逆位' : '正位'}</span></div>`).join('')}
+        ${cards.map((c, i) => {
+          const pos = positions ? positions[i].name : (c.position || '启示');
+          const desc = positions ? positions[i].desc : (c.description || '');
+          return `<div class="share-card-item">
+            <div>${c.emoji} <strong>${c.name}</strong> · ${pos} <span style="color:${c.isReversed ? '#e74c3c' : '#2ecc71'};">${c.isReversed ? '逆位' : '正位'}</span></div>
+            ${desc ? `<div style="font-size:0.75em;color:#6a4a8a;margin-top:2px;">💡 ${desc}</div>` : ''}
+            <div style="font-size:0.8em;color:#555;margin-top:3px;">${c.isReversed ? c.reversed : c.meaning}</div>
+          </div>`;
+        }).join('')}
       </div>
+      ${summary ? `<div style="margin-top:10px;padding:8px 10px;background:rgba(212,168,67,0.1);border-radius:8px;font-size:0.78em;line-height:1.6;color:#3e1a6e;border-left:2px solid var(--gold);">📖 ${summary.replace(/\n/g, '<br>')}</div>` : ''}
       <div class="share-footer">✦ 神秘塔罗 · 命运之轮转动 ✦</div>
     </div>
+    ${hasNotes ? `<div class="share-note-toggle"><label><input type="checkbox" id="shareIncludeNotes" onchange="updateShareText(this.checked)" /> 导出时包含私人备注</label></div>` : ''}
     <div class="share-actions">
-      <button class="btn-copy" onclick="copyShareText(\`${text.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">📋 复制文本</button>
+      <button class="btn-copy" id="shareCopyBtn" onclick="copyShareTextById()">📋 复制文本</button>
       <button class="close-btn" onclick="closeModal()" style="margin-top:0;">关闭</button>
     </div>
   `;
   modal.style.display = 'flex';
+
+  window._shareTextNoNotes = fullText;
+  window._shareTextWithNotes = fullTextWithNotes;
+  window._currentShareText = fullText;
+}
+
+function updateShareText(includeNotes) {
+  window._currentShareText = includeNotes ? window._shareTextWithNotes : window._shareTextNoNotes;
+}
+
+function copyShareTextById() {
+  const text = window._currentShareText || window._shareTextNoNotes || '';
+  copyShareText(text);
 }
 
 function copyShareText(text) {
@@ -2597,6 +3040,7 @@ function saveSpreadReadingToHistory(summary) {
     summary: summary,
     favorite: false,
     note: '',
+    cardNotes: spreadReadingCells.filter(c => c.card).map(() => ''),
     cards: spreadReadingCells.filter(c => c.card).map(c => ({
       name: c.card.name,
       emoji: c.card.emoji,
