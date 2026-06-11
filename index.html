@@ -1123,7 +1123,133 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ===== LOADING PARTICLES ===== */
+/* ===== EXPORT BUTTON ===== */
+.export-btn {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-light);
+  cursor: pointer;
+  font-size: 0.82em;
+  font-family: inherit;
+  transition: var(--transition);
+  margin-top: 12px;
+}
+.export-btn:hover {
+  background: rgba(212,168,67,0.15);
+}
+
+/* ===== FAVORITE ===== */
+.fav-star {
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: var(--transition);
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 0 4px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.fav-star.active { color: var(--gold); }
+.fav-star:hover { transform: scale(1.2); }
+
+/* ===== NOTE AREA ===== */
+.note-area {
+  margin-top: 14px;
+}
+.note-area textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(212,168,67,0.2);
+  background: rgba(0,0,0,0.25);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85em;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  transition: var(--transition);
+}
+.note-area textarea:focus { border-color: var(--gold); }
+.note-area textarea::placeholder { color: var(--text-dim); }
+
+/* ===== SHARE MODAL ===== */
+.share-card-content {
+  background: linear-gradient(180deg, #faf3e0, #f0e6c8);
+  color: #3e1a6e;
+  border-radius: 14px;
+  padding: 24px 20px;
+  font-size: 0.85em;
+  line-height: 1.7;
+  max-height: 50vh;
+  overflow-y: auto;
+  text-align: left;
+  border: 2px solid var(--gold);
+  margin: 16px 0;
+}
+.share-card-content .share-header {
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #2a1555;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+.share-card-content .share-topic {
+  text-align: center;
+  color: #6a4a8a;
+  margin-bottom: 14px;
+  font-size: 0.95em;
+}
+.share-card-content .share-cards {
+  margin-bottom: 10px;
+}
+.share-card-content .share-card-item {
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(106,74,138,0.2);
+}
+.share-card-content .share-card-item:last-child { border-bottom: none; }
+.share-card-content .share-footer {
+  text-align: center;
+  color: #9988b8;
+  font-size: 0.75em;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(106,74,138,0.2);
+}
+.share-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.share-actions button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  transition: var(--transition);
+}
+.share-actions .btn-copy {
+  background: var(--gold);
+  color: #1a0a2e;
+  font-weight: 600;
+}
+.share-actions .btn-copy:hover { background: var(--gold-light); }
+
+/* ===== POINTS ===== */
+.points {
+  color: var(--text-dim);
+  font-size: 0.75em;
+  text-align: center;
+  margin-top: 4px;
+}
 .particles {
   position: fixed;
   pointer-events: none;
@@ -1219,7 +1345,8 @@ body {
       <button class="filter-btn" data-filter="单张牌" onclick="setHistoryFilter('单张牌', this)">🃏 单张牌</button>
       <button class="filter-btn" data-filter="三张牌" onclick="setHistoryFilter('三张牌', this)">🎴 三张牌</button>
       <button class="filter-btn" data-filter="自定义牌阵" onclick="setHistoryFilter('自定义牌阵', this)">✨ 自定义</button>
-      <input type="text" class="filter-search" id="historySearch" placeholder="🔍 搜索主题..." oninput="renderHistory()" />
+      <button class="filter-btn" data-filter="favorites" onclick="setHistoryFilter('favorites', this)">⭐ 收藏</button>
+      <input type="text" class="filter-search" id="historySearch" placeholder="🔍 搜索主题..." oninput="onHistorySearch()" />
       <span class="filter-count" id="historyCount"></span>
     </div>
     <div class="history-list" id="historyList"></div>
@@ -1416,10 +1543,33 @@ function getAllCards() {
 
 // ==================== THREE-CARD SPREAD DEFINITIONS ====================
 const THREE_CARD_SPREADS = {
-  'past-present-future': { name: '过去·现在·未来', positions: ['过去', '现在', '未来'] },
-  'situation-obstacle-advice': { name: '情况·阻碍·建议', positions: ['情况', '阻碍', '建议'] },
-  'body-mind-spirit': { name: '身·心·灵', positions: ['身', '心', '灵'] }
+  'past-present-future': {
+    name: '过去·现在·未来',
+    positions: [
+      { name: '过去', desc: '这张牌代表过去的经历和影响，揭示已经发生的事件或已形成的模式。' },
+      { name: '现在', desc: '这张牌代表当前的状态与处境，反映你正面对的核心问题。' },
+      { name: '未来', desc: '这张牌代表未来的趋势与可能的发展方向，指引你前进的道路。' }
+    ]
+  },
+  'situation-obstacle-advice': {
+    name: '情况·阻碍·建议',
+    positions: [
+      { name: '情况', desc: '这张牌揭示你当前所处的整体状况与核心议题。' },
+      { name: '阻碍', desc: '这张牌指出阻碍你前进的障碍、挑战或内在心结。' },
+      { name: '建议', desc: '这张牌提供行动建议与智慧指引，帮助你应对当下局面。' }
+    ]
+  },
+  'body-mind-spirit': {
+    name: '身·心·灵',
+    positions: [
+      { name: '身', desc: '这张牌反映你身体与物质层面的状态，涉及健康、行动与实际生活。' },
+      { name: '心', desc: '这张牌映照你的情绪与心理状态，展现内心深处的情感波动。' },
+      { name: '灵', desc: '这张牌连接你的精神与灵性层面，揭示灵魂的渴望与更高指引。' }
+    ]
+  }
 };
+
+const SINGLE_POSITION = { name: '启示', desc: '这张牌代表宇宙在此刻给予你的核心启示与智慧指引，是你当下最需要关注的讯息。' };
 
 // ==================== STATE ====================
 const ALL_CARDS = getAllCards();
@@ -1451,13 +1601,45 @@ function init() {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       const panelId = 'panel-' + btn.dataset.panel;
       document.getElementById(panelId).classList.add('active');
-      if (btn.dataset.panel === 'history') renderHistory();
+      if (btn.dataset.panel === 'history') {
+        restoreHistoryFilter();
+        renderHistory();
+      }
       if (btn.dataset.panel === 'spread') {
         buildSpreadGrid();
         renderReadingTemplates();
       }
     });
   });
+
+  restoreHistoryState();
+}
+
+function restoreHistoryState() {
+  const state = loadHistoryState();
+  if (state.detailId) {
+    const records = getHistory();
+    const record = records.find(r => r.id == state.detailId);
+    if (record) {
+      viewHistoryDetail(state.detailId);
+      return;
+    }
+  }
+  restoreHistoryFilter();
+}
+
+function restoreHistoryFilter() {
+  const state = loadHistoryState();
+  if (state.filter) {
+    historyFilter = state.filter;
+    document.querySelectorAll('#historyFilter .filter-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.filter === state.filter);
+    });
+  }
+  if (state.search) {
+    const searchEl = document.getElementById('historySearch');
+    if (searchEl) searchEl.value = state.search;
+  }
 }
 
 function createStars() {
@@ -1654,20 +1836,23 @@ function performDraw() {
   if (currentMode === 'three') {
     positions = THREE_CARD_SPREADS[threeCardSpreadType].positions;
   } else {
-    positions = ['启示'];
+    positions = [SINGLE_POSITION];
   }
 
   resultArea.innerHTML = `
     <div class="result-cards">
       ${drawnCards.map((card, i) => `
         <div class="result-card-wrapper" style="--reveal-delay: ${i * 0.3}s">
-          <div class="position-label">${positions[i]}</div>
+          <div class="position-label">${positions[i].name}</div>
           ${renderCardElement(card, true, card.isReversed)}
           <div style="margin-top:8px;font-size:0.8em;">
             ${getOrientationBadge(card.isReversed)}
           </div>
         </div>
       `).join('')}
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="export-btn" onclick="exportShareCard()">📋 导出分享卡片</button>
     </div>
     <div class="card-interpretation" id="interpretation"></div>
   `;
@@ -1682,7 +1867,8 @@ function performDraw() {
       : '单张牌';
     const summaryCards = drawnCards.map((c, i) => ({
       ...c,
-      position: positions[i],
+      position: positions[i].name,
+      description: positions[i].desc,
       meaning: getCardMeaning(c)
     }));
     const summary = generateSummary(topic, spreadLabel, summaryCards);
@@ -1690,7 +1876,8 @@ function performDraw() {
     interp.style.display = 'block';
     interp.innerHTML = drawnCards.map((card, i) => `
       <div style="margin-bottom:18px;">
-        <div class="card-title">${positions[i]} · ${card.name}</div>
+        <div class="card-title">${positions[i].name} · ${card.name}</div>
+        <div class="position-desc">💡 ${positions[i].desc}</div>
         ${getOrientationBadge(card.isReversed)}
         <div class="meaning-text">${getCardMeaning(card)}</div>
       </div>
@@ -1745,7 +1932,8 @@ function saveReading(positions) {
     name: c.name,
     emoji: c.emoji,
     isReversed: c.isReversed,
-    position: positions ? positions[i] : '启示',
+    position: positions[i].name,
+    description: positions[i].desc,
     meaning: getCardMeaning(c)
   }));
 
@@ -1758,10 +1946,13 @@ function saveReading(positions) {
     spreadLabel: spreadLabel,
     topic: topic || null,
     summary: summary,
+    favorite: false,
+    note: '',
     cards: summaryCards
   });
   if (records.length > 100) records.length = 100;
   localStorage.setItem('tarotHistory', JSON.stringify(records));
+  saveHistoryState(null);
 }
 
 function getHistory() {
@@ -1775,13 +1966,15 @@ function renderHistory() {
   const countEl = document.getElementById('historyCount');
   let records = getHistory();
 
+  if (historyFilter === 'favorites') {
+    records = records.filter(r => r.favorite);
+  } else if (historyFilter !== 'all') {
+    records = records.filter(r => r.mode === historyFilter);
+  }
+
   const searchTerm = (document.getElementById('historySearch')?.value || '').trim().toLowerCase();
   if (searchTerm) {
     records = records.filter(r => (r.topic || '').toLowerCase().includes(searchTerm));
-  }
-
-  if (historyFilter !== 'all') {
-    records = records.filter(r => r.mode === historyFilter);
   }
 
   if (countEl) {
@@ -1794,10 +1987,14 @@ function renderHistory() {
   }
   container.innerHTML = records.map(r => `
     <div class="history-item" onclick="viewHistoryDetail('${r.id}')">
-      <div class="history-time">${r.time}</div>
+      <div class="history-time">
+        <button class="fav-star ${r.favorite ? 'active' : ''}" onclick="event.stopPropagation();toggleFavorite('${r.id}')">${r.favorite ? '★' : '☆'}</button>
+        ${r.time}
+      </div>
       <div class="history-type">${r.spreadLabel || r.mode}占卜${r.mode === '自定义牌阵' ? ' · ' + (r.topic || '') : ''}</div>
       ${r.topic ? `<div class="history-topic">主题：<span>${r.topic}</span></div>` : ''}
       <div class="history-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${(c.isReversed || c.reversed) ? '逆' : '正'})`).join(' · ')}</div>
+      ${r.note ? `<div class="points">💬 ${r.note.substring(0, 40)}${r.note.length > 40 ? '...' : ''}</div>` : ''}
     </div>
   `).join('');
 }
@@ -1807,6 +2004,7 @@ function setHistoryFilter(filter, btn) {
   document.querySelectorAll('#historyFilter .filter-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   document.getElementById('historySearch').value = '';
+  saveHistoryState(null);
   renderHistory();
 }
 
@@ -1819,6 +2017,8 @@ function viewHistoryDetail(id) {
     const full = ALL_CARDS.find(fc => fc.name === c.name);
     return { ...full, isReversed: !!(c.isReversed || c.reversed) };
   });
+
+  saveHistoryState(id);
 
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.querySelector('.nav-btn[data-panel="divination"]').classList.add('active');
@@ -1842,6 +2042,10 @@ function viewHistoryDetail(id) {
         </div>
       `).join('')}
     </div>
+    <div style="text-align:center;margin:8px 0;">
+      <button class="fav-star ${record.favorite ? 'active' : ''}" onclick="toggleFavorite('${record.id}')" style="font-size:1.5em;">${record.favorite ? '★' : '☆'}</button>
+      <span style="color:var(--text-dim);font-size:0.8em;margin-left:6px;">${record.favorite ? '已收藏' : '点击收藏'}</span>
+    </div>
     <div class="card-interpretation">
       ${drawnCards.map((card, i) => {
         const desc = record.cards[i].description;
@@ -1860,16 +2064,156 @@ function viewHistoryDetail(id) {
         <div class="summary-text">${record.summary.replace(/\n/g, '<br>')}</div>
       </div>
     ` : ''}
+    <div class="note-area" style="max-width:600px;margin:12px auto;">
+      <textarea placeholder="写下你的感想备注..." onchange="updateNote('${record.id}', this.value)">${record.note || ''}</textarea>
+    </div>
+    <div style="text-align:center;margin-top:8px;">
+      <button class="export-btn" onclick="exportHistoryCard('${record.id}')">📋 导出分享卡片</button>
+      <button class="export-btn" style="margin-left:8px;" onclick="goBackToHistory()">📜 返回历史列表</button>
+    </div>
   `;
   resultArea.classList.add('show');
+}
+
+function goBackToHistory() {
+  saveHistoryState(null);
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.nav-btn[data-panel="history"]').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-history').classList.add('active');
+  restoreHistoryFilter();
+  renderHistory();
 }
 
 function clearHistory() {
   if (confirm('确定要清除所有占卜记录吗？此操作不可撤销。')) {
     localStorage.removeItem('tarotHistory');
+    localStorage.removeItem('tarotHistoryState');
+    historyFilter = 'all';
+    document.querySelectorAll('#historyFilter .filter-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.filter === 'all');
+    });
+    const searchEl = document.getElementById('historySearch');
+    if (searchEl) searchEl.value = '';
     renderHistory();
     showToast('记录已清除');
   }
+}
+
+// ==================== FAVORITES & NOTES ====================
+function toggleFavorite(id) {
+  const records = getHistory();
+  const idx = records.findIndex(r => r.id == id);
+  if (idx < 0) return;
+  records[idx].favorite = !records[idx].favorite;
+  localStorage.setItem('tarotHistory', JSON.stringify(records));
+  showToast(records[idx].favorite ? '已收藏 ⭐' : '已取消收藏');
+  renderHistory();
+  if (document.getElementById('panel-divination').classList.contains('active')) {
+    viewHistoryDetail(id);
+  }
+}
+
+function updateNote(id, value) {
+  const records = getHistory();
+  const idx = records.findIndex(r => r.id == id);
+  if (idx < 0) return;
+  records[idx].note = value;
+  localStorage.setItem('tarotHistory', JSON.stringify(records));
+}
+
+// ==================== HISTORY STATE PERSISTENCE ====================
+function saveHistoryState(detailId) {
+  const searchEl = document.getElementById('historySearch');
+  const state = {
+    filter: historyFilter,
+    search: searchEl ? searchEl.value.trim() : '',
+    detailId: detailId
+  };
+  localStorage.setItem('tarotHistoryState', JSON.stringify(state));
+}
+
+function loadHistoryState() {
+  try { return JSON.parse(localStorage.getItem('tarotHistoryState') || '{}'); }
+  catch { return {}; }
+}
+
+function onHistorySearch() {
+  saveHistoryState(null);
+  renderHistory();
+}
+
+// ==================== EXPORT / SHARE ====================
+function exportShareCard() {
+  const topic = currentTopic || document.getElementById('topicInput').value.trim();
+  const spreadLabel = currentMode === 'three'
+    ? THREE_CARD_SPREADS[threeCardSpreadType].name
+    : '单张牌';
+  const date = new Date().toLocaleString('zh-CN');
+  showShareModal(topic, spreadLabel, date, drawnCards);
+}
+
+function exportHistoryCard(id) {
+  const records = getHistory();
+  const record = records.find(r => r.id == id);
+  if (!record) return;
+  const cards = record.cards.map(c => {
+    const full = ALL_CARDS.find(fc => fc.name === c.name);
+    return { ...full, isReversed: !!(c.isReversed || c.reversed), position: c.position };
+  });
+  showShareModal(record.topic, record.spreadLabel, record.time, cards);
+}
+
+function showShareModal(topic, spreadLabel, date, cards) {
+  const text = `🔮 塔罗占卜\n━━━━━━━━━━━━━━\n${topic ? `主题：${topic}\n` : ''}牌阵：${spreadLabel}\n日期：${date}\n━━━━━━━━━━━━━━\n${cards.map((c, i) => {
+    const pos = c.position || '启示';
+    const dir = c.isReversed ? '（逆位）' : '（正位）';
+    return `${pos}：${c.emoji} ${c.name} ${dir}\n${c.isReversed ? c.reversed : c.meaning}`;
+  }).join('\n\n')}\n━━━━━━━━━━━━━━\n✦ 神秘塔罗 · 命运之轮转动 ✦`;
+
+  const modal = document.getElementById('dailyModal');
+  const content = document.getElementById('dailyModalContent');
+  content.innerHTML = `
+    <h2>📋 分享卡片</h2>
+    <div class="share-card-content">
+      <div class="share-header">🔮 塔罗占卜</div>
+      ${topic ? `<div class="share-topic">主题：${topic}</div>` : ''}
+      <div class="share-topic" style="font-size:0.8em;">牌阵：${spreadLabel} · ${date}</div>
+      <div class="share-cards">
+        ${cards.map((c, i) => `<div class="share-card-item">${c.emoji} <strong>${c.name}</strong> · ${c.position || '启示'} <span style="color:${c.isReversed ? '#e74c3c' : '#2ecc71'};">${c.isReversed ? '逆位' : '正位'}</span></div>`).join('')}
+      </div>
+      <div class="share-footer">✦ 神秘塔罗 · 命运之轮转动 ✦</div>
+    </div>
+    <div class="share-actions">
+      <button class="btn-copy" onclick="copyShareText(\`${text.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">📋 复制文本</button>
+      <button class="close-btn" onclick="closeModal()" style="margin-top:0;">关闭</button>
+    </div>
+  `;
+  modal.style.display = 'flex';
+}
+
+function copyShareText(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('✅ 已复制到剪贴板');
+    }).catch(() => {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('✅ 已复制到剪贴板'); }
+  catch { showToast('❌ 复制失败，请手动复制'); }
+  document.body.removeChild(ta);
 }
 
 // ==================== SPREAD DESIGN MODE ====================
@@ -2251,6 +2595,8 @@ function saveSpreadReadingToHistory(summary) {
     spreadLabel: templateName,
     topic: spreadReadingTopic || null,
     summary: summary,
+    favorite: false,
+    note: '',
     cards: spreadReadingCells.filter(c => c.card).map(c => ({
       name: c.card.name,
       emoji: c.card.emoji,
@@ -2262,6 +2608,7 @@ function saveSpreadReadingToHistory(summary) {
   });
   if (records.length > 100) records.length = 100;
   localStorage.setItem('tarotHistory', JSON.stringify(records));
+  saveHistoryState(null);
 }
 
 // ==================== CARD BACK ====================
