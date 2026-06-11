@@ -126,12 +126,80 @@ body {
   letter-spacing: 2px;
 }
 
+/* ===== TOPIC INPUT ===== */
+.topic-area {
+  max-width: 500px;
+  margin: 0 auto 24px;
+  text-align: center;
+}
+.topic-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.topic-input {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 25px;
+  border: 1px solid rgba(212,168,67,0.3);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9em;
+  outline: none;
+  transition: var(--transition);
+}
+.topic-input:focus { border-color: var(--gold); }
+.topic-input::placeholder { color: var(--text-dim); }
+.topic-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.topic-tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(212,168,67,0.25);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.82em;
+  font-family: inherit;
+  transition: var(--transition);
+}
+.topic-tag:hover { border-color: var(--gold); color: var(--gold-light); }
+.topic-tag.selected {
+  background: rgba(212,168,67,0.15);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+/* ===== SPREAD SELECTOR (three-card) ===== */
+.spread-selector {
+  text-align: center;
+  margin-bottom: 20px;
+  display: none;
+}
+.spread-selector.visible { display: block; }
+.spread-selector select {
+  padding: 9px 16px;
+  border-radius: 25px;
+  border: 1px solid var(--accent);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+  outline: none;
+}
+
 /* ===== DIVINATION PANEL ===== */
 .mode-select {
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 .mode-card {
@@ -465,7 +533,7 @@ body {
   background: rgba(46,204,113,0.2);
   color: #2ecc71;
 }
-.orientation-badge.reversed {
+.orientation-badge.reversed-badge {
   background: rgba(231,76,60,0.2);
   color: #e74c3c;
 }
@@ -505,6 +573,14 @@ body {
   font-weight: 600;
   margin: 4px 0;
 }
+.history-item .history-topic {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.history-item .history-topic span {
+  color: var(--gold-light);
+}
 .history-item .history-cards {
   font-size: 0.9em;
   color: var(--text);
@@ -533,7 +609,34 @@ body {
   background: rgba(231,76,60,0.1);
 }
 
-/* ===== SPREAD BUILDER PANEL ===== */
+/* ===== SPREAD PANEL ===== */
+.spread-mode-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.spread-mode-tab {
+  padding: 10px 28px;
+  border-radius: 25px;
+  border: 1px solid rgba(212,168,67,0.2);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9em;
+  transition: var(--transition);
+}
+.spread-mode-tab:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+.spread-mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
 .spread-controls {
   display: flex;
   justify-content: center;
@@ -705,6 +808,16 @@ body {
   border: 1px solid #e74c3c;
   color: #e74c3c;
 }
+.spread-actions .btn-draw {
+  background: linear-gradient(135deg, var(--gold), #b8860b);
+  color: #1a0a2e;
+  font-weight: 700;
+  font-size: 1em;
+  padding: 12px 32px;
+}
+.spread-actions .btn-draw:hover {
+  background: var(--gold-light);
+}
 
 .saved-spreads-list {
   max-width: 400px;
@@ -729,6 +842,17 @@ body {
 }
 .saved-spreads-list .saved-spread-item:hover {
   border-color: var(--gold);
+}
+
+/* ===== SPREAD READING TOPIC ===== */
+.spread-topic-area {
+  max-width: 400px;
+  margin: 0 auto 16px;
+  display: flex;
+  gap: 8px;
+}
+.spread-topic-area .topic-input {
+  margin-bottom: 0;
 }
 
 /* ===== SETTINGS PANEL ===== */
@@ -937,7 +1061,29 @@ body {
       <div class="mode-card" data-mode="three" onclick="selectMode('three')">
         <div class="mode-icon">🎴🎴🎴</div>
         <div class="mode-name">三张牌</div>
-        <div class="mode-desc">过去·现在·未来</div>
+        <div class="mode-desc" id="threeCardDesc">过去·现在·未来</div>
+      </div>
+    </div>
+
+    <div class="spread-selector" id="spreadSelector">
+      <select id="threeCardSpreadType" onchange="onSpreadTypeChange()">
+        <option value="past-present-future">过去 · 现在 · 未来</option>
+        <option value="situation-obstacle-advice">情况 · 阻碍 · 建议</option>
+        <option value="body-mind-spirit">身 · 心 · 灵</option>
+      </select>
+    </div>
+
+    <div class="topic-area">
+      <div class="topic-input-row">
+        <input type="text" class="topic-input" id="topicInput" placeholder="写下你想问的问题（可选）" maxlength="60" />
+      </div>
+      <div class="topic-tags" id="topicTags">
+        <button class="topic-tag" data-topic="爱情" onclick="selectTopic('爱情', this)">💕 爱情</button>
+        <button class="topic-tag" data-topic="事业" onclick="selectTopic('事业', this)">💼 事业</button>
+        <button class="topic-tag" data-topic="学业" onclick="selectTopic('学业', this)">📚 学业</button>
+        <button class="topic-tag" data-topic="财运" onclick="selectTopic('财运', this)">💰 财运</button>
+        <button class="topic-tag" data-topic="健康" onclick="selectTopic('健康', this)">🏥 健康</button>
+        <button class="topic-tag" data-topic="综合" onclick="selectTopic('综合', this)">🌟 综合</button>
       </div>
     </div>
 
@@ -965,21 +1111,43 @@ body {
   <!-- ===== SPREAD PANEL ===== -->
   <section class="panel" id="panel-spread">
     <h2 class="section-title">✨ 自定义牌阵</h2>
-    <div class="spread-controls">
-      <div class="spread-grid-size">
-        行 <input type="number" id="gridRows" value="2" min="1" max="5" onchange="buildSpreadGrid()">
-        列 <input type="number" id="gridCols" value="3" min="1" max="6" onchange="buildSpreadGrid()">
+
+    <div class="spread-mode-tabs">
+      <button class="spread-mode-tab active" data-spread-mode="design" onclick="switchSpreadMode('design')">🎨 设计牌阵</button>
+      <button class="spread-mode-tab" data-spread-mode="reading" onclick="switchSpreadMode('reading')">🔮 使用牌阵占卜</button>
+    </div>
+
+    <div id="spreadDesignMode">
+      <div class="spread-controls">
+        <div class="spread-grid-size">
+          行 <input type="number" id="gridRows" value="2" min="1" max="5" onchange="buildSpreadGrid()">
+          列 <input type="number" id="gridCols" value="3" min="1" max="6" onchange="buildSpreadGrid()">
+        </div>
+        <button onclick="buildSpreadGrid()">🔄 重建网格</button>
       </div>
-      <button onclick="buildSpreadGrid()">🔄 重建网格</button>
-      <button onclick="drawCardsForSpread()" id="spreadDrawBtn">🎴 随机填牌</button>
+      <div class="spread-grid" id="spreadGrid"></div>
+      <div class="spread-actions">
+        <button class="btn-save" onclick="saveSpreadTemplate()">💾 保存为模板</button>
+        <button class="btn-load" onclick="toggleSavedTemplates()">📂 加载模板</button>
+        <button class="btn-delete" onclick="deleteCurrentTemplate()">🗑️ 删除模板</button>
+      </div>
+      <div class="saved-spreads-list" id="savedTemplatesList" style="display:none;"></div>
     </div>
-    <div class="spread-grid" id="spreadGrid"></div>
-    <div class="spread-actions">
-      <button class="btn-save" onclick="saveSpread()">💾 保存牌阵</button>
-      <button class="btn-load" onclick="toggleSavedSpreads()">📂 加载牌阵</button>
-      <button class="btn-delete" onclick="deleteCurrentSpread()">🗑️ 删除当前</button>
+
+    <div id="spreadReadingMode" style="display:none;">
+      <div style="text-align:center;margin-bottom:12px;color:var(--text-dim);">
+        选择一个牌阵模板，输入主题后开始占卜
+      </div>
+      <div class="spread-topic-area">
+        <input type="text" class="topic-input" id="spreadTopicInput" placeholder="占卜主题（可选）" maxlength="40" />
+      </div>
+      <div class="saved-spreads-list" id="readingTemplatesList" style="display:block;"></div>
+      <div class="spread-grid" id="spreadReadingGrid"></div>
+      <div class="spread-actions" id="spreadReadingActions" style="display:none;">
+        <button class="btn-draw" onclick="drawSpreadReading()">🔮 开始抽牌</button>
+      </div>
+      <div class="result-area" id="spreadResultArea" style="margin-top:20px;"></div>
     </div>
-    <div class="saved-spreads-list" id="savedSpreadsList" style="display:none;"></div>
   </section>
 
   <!-- ===== SETTINGS PANEL ===== -->
@@ -1128,13 +1296,26 @@ function getAllCards() {
   return cards;
 }
 
+// ==================== THREE-CARD SPREAD DEFINITIONS ====================
+const THREE_CARD_SPREADS = {
+  'past-present-future': { name: '过去·现在·未来', positions: ['过去', '现在', '未来'] },
+  'situation-obstacle-advice': { name: '情况·阻碍·建议', positions: ['情况', '阻碍', '建议'] },
+  'body-mind-spirit': { name: '身·心·灵', positions: ['身', '心', '灵'] }
+};
+
 // ==================== STATE ====================
 const ALL_CARDS = getAllCards();
 let currentMode = 'single';
+let threeCardSpreadType = 'past-present-future';
+let currentTopic = '';
 let drawnCards = [];
 let currentCardBack = localStorage.getItem('cardBack') || 'classic';
 let currentSpread = null;
 let spreadCells = [];
+let spreadMode = 'design';
+let spreadReadingTemplate = null;
+let spreadReadingCells = [];
+let spreadReadingTopic = '';
 
 // ==================== INIT ====================
 function init() {
@@ -1152,7 +1333,10 @@ function init() {
       const panelId = 'panel-' + btn.dataset.panel;
       document.getElementById(panelId).classList.add('active');
       if (btn.dataset.panel === 'history') renderHistory();
-      if (btn.dataset.panel === 'spread') buildSpreadGrid();
+      if (btn.dataset.panel === 'spread') {
+        buildSpreadGrid();
+        renderReadingTemplates();
+      }
     });
   });
 }
@@ -1174,7 +1358,7 @@ function createStars() {
 }
 
 // ==================== CARD RENDERING ====================
-function createCardFace(card, reversed = false) {
+function createCardFace(card, isReversed = false) {
   let suitClass = card.type === 'major' ? 'major-arcana' : `minor-${card.suit}`;
   let topLabel = card.type === 'major' ? card.num : card.rank;
   let suitEmoji = '';
@@ -1183,7 +1367,7 @@ function createCardFace(card, reversed = false) {
     suitEmoji = `<span class="suit-icon">${suitMap[card.suit] || ''}</span>`;
   }
   return `
-    <div class="card-face ${suitClass} ${reversed ? 'reversed' : ''}">
+    <div class="card-face ${suitClass} ${isReversed ? 'reversed' : ''}">
       <span class="card-num">${topLabel}</span>
       <span class="card-emoji">${card.emoji}</span>
       <span class="card-name">${card.name}</span>
@@ -1196,13 +1380,21 @@ function createCardBack(backType) {
   return `<div class="card-back ${backType}"></div>`;
 }
 
-function renderCardElement(card, showFace = true, reversed = false, backType = null) {
+function renderCardElement(card, showFace = true, isReversed = false, backType = null) {
   const bt = backType || currentCardBack;
   return `
     <div class="tarot-card">
-      ${showFace ? createCardFace(card, reversed) : createCardBack(bt)}
+      ${showFace ? createCardFace(card, isReversed) : createCardBack(bt)}
     </div>
   `;
+}
+
+function getCardMeaning(card) {
+  return card.isReversed ? card.reversed : card.meaning;
+}
+
+function getOrientationBadge(isReversed) {
+  return `<span class="orientation-badge ${isReversed ? 'reversed-badge' : 'upright'}">${isReversed ? '逆位' : '正位'}</span>`;
 }
 
 // ==================== DECK BACKS ====================
@@ -1215,12 +1407,56 @@ function updateDeckBacks() {
   }
 }
 
+// ==================== TOPIC SELECTION ====================
+function selectTopic(topic, btn) {
+  const input = document.getElementById('topicInput');
+  const allTags = document.querySelectorAll('#topicTags .topic-tag');
+  if (btn.classList.contains('selected')) {
+    btn.classList.remove('selected');
+    currentTopic = '';
+    input.value = '';
+  } else {
+    allTags.forEach(t => t.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentTopic = topic;
+    input.value = topic;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const topicInput = document.getElementById('topicInput');
+  if (topicInput) {
+    topicInput.addEventListener('input', () => {
+      currentTopic = topicInput.value;
+      const allTags = document.querySelectorAll('#topicTags .topic-tag');
+      allTags.forEach(t => {
+        t.classList.toggle('selected', t.dataset.topic === topicInput.value);
+      });
+      if (!topicInput.value) {
+        allTags.forEach(t => t.classList.remove('selected'));
+      }
+    });
+  }
+});
+
 // ==================== MODE SELECTION ====================
 function selectMode(mode) {
   currentMode = mode;
   document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
   document.querySelector(`.mode-card[data-mode="${mode}"]`).classList.add('selected');
+  const selector = document.getElementById('spreadSelector');
+  if (mode === 'three') {
+    selector.classList.add('visible');
+  } else {
+    selector.classList.remove('visible');
+  }
   resetResult();
+}
+
+function onSpreadTypeChange() {
+  threeCardSpreadType = document.getElementById('threeCardSpreadType').value;
+  const spread = THREE_CARD_SPREADS[threeCardSpreadType];
+  document.getElementById('threeCardDesc').textContent = spread.name;
 }
 
 // ==================== DRAW ====================
@@ -1248,22 +1484,27 @@ function performDraw() {
   const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
   drawnCards = shuffled.slice(0, count).map(card => ({
     ...card,
-    reversed: Math.random() > 0.5
+    isReversed: Math.random() > 0.5
   }));
 
   spawnParticles();
 
   const resultArea = document.getElementById('resultArea');
-  const positions = currentMode === 'three' ? ['过去', '现在', '未来'] : ['启示'];
+  let positions;
+  if (currentMode === 'three') {
+    positions = THREE_CARD_SPREADS[threeCardSpreadType].positions;
+  } else {
+    positions = ['启示'];
+  }
 
   resultArea.innerHTML = `
     <div class="result-cards">
       ${drawnCards.map((card, i) => `
         <div class="result-card-wrapper" style="--reveal-delay: ${i * 0.3}s">
           <div class="position-label">${positions[i]}</div>
-          ${renderCardElement(card, true, card.reversed)}
+          ${renderCardElement(card, true, card.isReversed)}
           <div style="margin-top:8px;font-size:0.8em;">
-            <span class="orientation-badge ${card.reversed ? 'reversed' : 'upright'}">${card.reversed ? '逆位' : '正位'}</span>
+            ${getOrientationBadge(card.isReversed)}
           </div>
         </div>
       `).join('')}
@@ -1279,13 +1520,13 @@ function performDraw() {
     interp.innerHTML = drawnCards.map((card, i) => `
       <div style="margin-bottom:18px;">
         <div class="card-title">${positions[i]} · ${card.name}</div>
-        <span class="orientation-badge ${card.reversed ? 'reversed' : 'upright'}">${card.reversed ? '逆位' : '正位'}</span>
-        <div class="meaning-text">${card.reversed ? card.reversed : card.meaning}</div>
+        ${getOrientationBadge(card.isReversed)}
+        <div class="meaning-text">${getCardMeaning(card)}</div>
       </div>
     `).join('');
   }, 600);
 
-  saveReading();
+  saveReading(positions);
 }
 
 function resetResult() {
@@ -1318,17 +1559,25 @@ function spawnParticles() {
 }
 
 // ==================== SAVE & HISTORY ====================
-function saveReading() {
+function saveReading(positions) {
+  const topic = currentTopic || document.getElementById('topicInput').value.trim();
   const records = getHistory();
+  const spreadLabel = currentMode === 'three'
+    ? THREE_CARD_SPREADS[threeCardSpreadType].name
+    : '单张牌';
+
   records.unshift({
     id: Date.now(),
     time: new Date().toLocaleString('zh-CN'),
     mode: currentMode === 'three' ? '三张牌' : '单张牌',
-    cards: drawnCards.map(c => ({
+    spreadLabel: spreadLabel,
+    topic: topic || null,
+    cards: drawnCards.map((c, i) => ({
       name: c.name,
       emoji: c.emoji,
-      reversed: c.reversed,
-      meaning: c.reversed ? c.reversed : c.meaning
+      isReversed: c.isReversed,
+      position: positions ? positions[i] : '启示',
+      meaning: getCardMeaning(c)
     }))
   });
   if (records.length > 100) records.length = 100;
@@ -1351,8 +1600,9 @@ function renderHistory() {
   container.innerHTML = records.map(r => `
     <div class="history-item" onclick="viewHistoryDetail('${r.id}')">
       <div class="history-time">${r.time}</div>
-      <div class="history-type">${r.mode}占卜</div>
-      <div class="history-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${c.reversed ? '逆' : '正'})`).join(' · ')}</div>
+      <div class="history-type">${r.spreadLabel || r.mode}占卜${r.mode === '自定义牌阵' ? ' · ' + (r.topic || '') : ''}</div>
+      ${r.topic ? `<div class="history-topic">主题：<span>${r.topic}</span></div>` : ''}
+      <div class="history-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${(c.isReversed || c.reversed) ? '逆' : '正'})`).join(' · ')}</div>
     </div>
   `).join('');
 }
@@ -1364,7 +1614,7 @@ function viewHistoryDetail(id) {
 
   drawnCards = record.cards.map(c => {
     const full = ALL_CARDS.find(fc => fc.name === c.name);
-    return { ...full, reversed: c.reversed };
+    return { ...full, isReversed: !!(c.isReversed || c.reversed) };
   });
 
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1373,16 +1623,18 @@ function viewHistoryDetail(id) {
   document.getElementById('panel-divination').classList.add('active');
 
   const resultArea = document.getElementById('resultArea');
-  const positions = record.mode === '三张牌' ? ['过去', '现在', '未来'] : ['启示'];
   resultArea.innerHTML = `
-    <h3 style="text-align:center;color:var(--text-dim);margin-bottom:16px;">📜 ${record.time}</h3>
+    <h3 style="text-align:center;color:var(--text-dim);margin-bottom:16px;">
+      📜 ${record.time}
+      ${record.topic ? `<br><span style="color:var(--gold-light);">主题：${record.topic}</span>` : ''}
+    </h3>
     <div class="result-cards">
       ${drawnCards.map((card, i) => `
         <div class="result-card-wrapper" style="--reveal-delay:${i*0.15}s;opacity:1;">
-          <div class="position-label">${positions[i]}</div>
-          ${renderCardElement(card, true, card.reversed)}
+          <div class="position-label">${record.cards[i].position}</div>
+          ${renderCardElement(card, true, card.isReversed)}
           <div style="margin-top:8px;font-size:0.8em;">
-            <span class="orientation-badge ${card.reversed ? 'reversed' : 'upright'}">${card.reversed ? '逆位' : '正位'}</span>
+            ${getOrientationBadge(card.isReversed)}
           </div>
         </div>
       `).join('')}
@@ -1390,9 +1642,9 @@ function viewHistoryDetail(id) {
     <div class="card-interpretation">
       ${drawnCards.map((card, i) => `
         <div style="margin-bottom:18px;">
-          <div class="card-title">${positions[i]} · ${card.name}</div>
-          <span class="orientation-badge ${card.reversed ? 'reversed' : 'upright'}">${card.reversed ? '逆位' : '正位'}</span>
-          <div class="meaning-text">${card.reversed ? card.reversed : card.meaning}</div>
+          <div class="card-title">${record.cards[i].position} · ${card.name}</div>
+          ${getOrientationBadge(card.isReversed)}
+          <div class="meaning-text">${getCardMeaning(card)}</div>
         </div>
       `).join('')}
     </div>
@@ -1408,8 +1660,31 @@ function clearHistory() {
   }
 }
 
-// ==================== SPREAD BUILDER ====================
+// ==================== SPREAD DESIGN MODE ====================
+function switchSpreadMode(mode) {
+  spreadMode = mode;
+  document.querySelectorAll('.spread-mode-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.spread-mode-tab[data-spread-mode="${mode}"]`).classList.add('active');
+
+  if (mode === 'design') {
+    document.getElementById('spreadDesignMode').style.display = 'block';
+    document.getElementById('spreadReadingMode').style.display = 'none';
+    buildSpreadGrid();
+  } else {
+    document.getElementById('spreadDesignMode').style.display = 'none';
+    document.getElementById('spreadReadingMode').style.display = 'block';
+    spreadReadingTemplate = null;
+    spreadReadingCells = [];
+    document.getElementById('spreadReadingGrid').innerHTML = '';
+    document.getElementById('spreadReadingActions').style.display = 'none';
+    document.getElementById('spreadResultArea').innerHTML = '';
+    document.getElementById('spreadResultArea').classList.remove('show');
+    renderReadingTemplates();
+  }
+}
+
 function buildSpreadGrid() {
+  if (spreadMode !== 'design') return;
   const rows = parseInt(document.getElementById('gridRows').value) || 2;
   const cols = parseInt(document.getElementById('gridCols').value) || 3;
   const grid = document.getElementById('spreadGrid');
@@ -1422,7 +1697,7 @@ function buildSpreadGrid() {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c;
-      spreadCells.push({ row: r, col: c, name: '', card: null });
+      spreadCells.push({ row: r, col: c, name: '' });
       const cell = document.createElement('div');
       cell.className = 'grid-cell';
       cell.dataset.index = idx;
@@ -1446,50 +1721,26 @@ function buildSpreadGrid() {
         e.dataTransfer.effectAllowed = 'move';
       });
 
-      cell.addEventListener('click', () => {
-        if (spreadCells[idx].card) {
-          showSpreadCardDetail(idx);
-        }
-      });
-
       cell.innerHTML = `
-        <div class="cell-empty-text">点击放置</div>
+        <div class="cell-empty-text">拖拽调整位置</div>
         <input class="cell-name-input" placeholder="位置名称" value="${spreadCells[idx].name}"
           onchange="updateCellName(${idx}, this.value)" onclick="event.stopPropagation()" />
-        <button class="cell-remove" onclick="event.stopPropagation();removeCellCard(${idx})">✕</button>
       `;
 
       grid.appendChild(cell);
     }
   }
 
-  renderSpreadCells();
+  renderDesignCells();
 }
 
-function renderSpreadCells() {
+function renderDesignCells() {
   const cells = document.querySelectorAll('#spreadGrid .grid-cell');
   cells.forEach((cell, idx) => {
     const data = spreadCells[idx];
     if (!data) return;
-    cell.className = 'grid-cell' + (data.card ? ' filled' : '');
     const nameInput = cell.querySelector('.cell-name-input');
     if (nameInput) nameInput.value = data.name;
-
-    if (data.card) {
-      cell.querySelector('.cell-empty-text').style.display = 'none';
-      let miniEl = cell.querySelector('.cell-card-mini');
-      if (!miniEl) {
-        miniEl = document.createElement('div');
-        miniEl.className = 'cell-card-mini';
-        cell.insertBefore(miniEl, cell.querySelector('.cell-name-input'));
-      }
-      miniEl.textContent = data.card.emoji;
-      miniEl.title = data.card.name + (data.card.reversed ? '(逆位)' : '(正位)');
-    } else {
-      cell.querySelector('.cell-empty-text').style.display = '';
-      const miniEl = cell.querySelector('.cell-card-mini');
-      if (miniEl) miniEl.remove();
-    }
   });
 }
 
@@ -1503,34 +1754,208 @@ function swapSpreadCells(fromIdx, toIdx) {
   const temp = spreadCells[fromIdx];
   spreadCells[fromIdx] = spreadCells[toIdx];
   spreadCells[toIdx] = temp;
-  renderSpreadCells();
+  renderDesignCells();
 }
 
-function removeCellCard(idx) {
-  if (spreadCells[idx]) {
-    spreadCells[idx].card = null;
-    renderSpreadCells();
+function saveSpreadTemplate() {
+  const name = prompt('请为这个牌阵模板命名：', currentSpread?.name || '我的自定义牌阵');
+  if (!name) return;
+
+  const templates = getSpreadTemplates();
+  const templateData = {
+    name,
+    rows: parseInt(document.getElementById('gridRows').value) || 2,
+    cols: parseInt(document.getElementById('gridCols').value) || 3,
+    cells: spreadCells.map(c => ({ name: c.name })),
+    savedAt: new Date().toLocaleString('zh-CN')
+  };
+
+  if (currentSpread && currentSpread.name === name) {
+    const idx = templates.findIndex(s => s.name === name);
+    if (idx >= 0) templates[idx] = templateData;
+  } else {
+    templates.unshift(templateData);
+  }
+
+  localStorage.setItem('tarotSpreadTemplates', JSON.stringify(templates));
+  currentSpread = templateData;
+  showToast('牌阵模板已保存：' + name);
+  renderSavedTemplates();
+}
+
+function getSpreadTemplates() {
+  try { return JSON.parse(localStorage.getItem('tarotSpreadTemplates') || '[]'); }
+  catch { return []; }
+}
+
+function loadSpreadTemplate(index) {
+  const templates = getSpreadTemplates();
+  if (index < 0 || index >= templates.length) return;
+  const template = templates[index];
+  currentSpread = template;
+
+  document.getElementById('gridRows').value = template.rows;
+  document.getElementById('gridCols').value = template.cols;
+  buildSpreadGrid();
+
+  template.cells.forEach((c, i) => {
+    if (i < spreadCells.length) {
+      spreadCells[i].name = c.name || '';
+    }
+  });
+  renderDesignCells();
+  showToast('已加载模板：' + template.name);
+}
+
+function deleteCurrentTemplate() {
+  if (!currentSpread) { showToast('没有已加载的模板'); return; }
+  if (confirm(`确定删除模板「${currentSpread.name}」吗？`)) {
+    const templates = getSpreadTemplates().filter(s => s.name !== currentSpread.name);
+    localStorage.setItem('tarotSpreadTemplates', JSON.stringify(templates));
+    currentSpread = null;
+    buildSpreadGrid();
+    showToast('模板已删除');
+    renderSavedTemplates();
   }
 }
 
-function drawCardsForSpread() {
-  const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
-  let cardIdx = 0;
-  spreadCells.forEach(cell => {
-    if (cell.name || !cell.card) {
-      cell.card = {
-        ...shuffled[cardIdx % shuffled.length],
-        reversed: Math.random() > 0.5
-      };
-      cardIdx++;
-    }
-  });
-  renderSpreadCells();
-  showToast('已随机填牌');
+function toggleSavedTemplates() {
+  const el = document.getElementById('savedTemplatesList');
+  if (el.style.display === 'none') {
+    renderSavedTemplates();
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
-function showSpreadCardDetail(idx) {
-  const cell = spreadCells[idx];
+function renderSavedTemplates() {
+  const el = document.getElementById('savedTemplatesList');
+  const templates = getSpreadTemplates();
+  if (templates.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-dim);text-align:center;padding:10px;">暂无保存的模板</div>';
+    return;
+  }
+  el.innerHTML = '<h4>已保存的模板</h4>' + templates.map((s, i) => `
+    <div class="saved-spread-item" onclick="loadSpreadTemplate(${i})">
+      <span>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></span>
+      <span style="color:var(--text-dim);font-size:0.75em;">${s.savedAt}</span>
+    </div>
+  `).join('');
+}
+
+// ==================== SPREAD READING MODE ====================
+function renderReadingTemplates() {
+  if (spreadMode !== 'reading') return;
+  const el = document.getElementById('readingTemplatesList');
+  const templates = getSpreadTemplates();
+  if (templates.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-dim);text-align:center;padding:20px;">还没有牌阵模板，请先在「设计牌阵」中创建</div>';
+    document.getElementById('spreadReadingGrid').innerHTML = '';
+    document.getElementById('spreadReadingActions').style.display = 'none';
+    return;
+  }
+  el.innerHTML = '<h4>选择牌阵模板开始占卜</h4>' + templates.map((s, i) => `
+    <div class="saved-spread-item" onclick="selectTemplateForReading(${i})" style="${spreadReadingTemplate && spreadReadingTemplate.name === s.name ? 'border-color:var(--gold);background:rgba(212,168,67,0.1);' : ''}">
+      <span>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></span>
+      <span style="color:var(--text-dim);font-size:0.7em;">${s.cells.filter(c => c.name).map(c => c.name).join(' · ') || '未命名'}</span>
+    </div>
+  `).join('');
+}
+
+function selectTemplateForReading(index) {
+  const templates = getSpreadTemplates();
+  if (index < 0 || index >= templates.length) return;
+  spreadReadingTemplate = templates[index];
+  spreadReadingTopic = document.getElementById('spreadTopicInput').value.trim();
+
+  const grid = document.getElementById('spreadReadingGrid');
+  const template = spreadReadingTemplate;
+  grid.style.gridTemplateColumns = `repeat(${template.cols}, 120px)`;
+  grid.style.gridTemplateRows = `repeat(${template.rows}, 180px)`;
+  grid.innerHTML = '';
+
+  spreadReadingCells = template.cells.map((c, idx) => ({
+    name: c.name,
+    card: null,
+    index: idx
+  }));
+
+  template.cells.forEach((c, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    cell.innerHTML = `
+      <div class="cell-empty-text">${c.name || '位置 ' + (idx + 1)}</div>
+    `;
+    grid.appendChild(cell);
+  });
+
+  document.getElementById('spreadReadingActions').style.display = 'flex';
+  document.getElementById('spreadResultArea').innerHTML = '';
+  document.getElementById('spreadResultArea').classList.remove('show');
+  renderReadingTemplates();
+}
+
+function drawSpreadReading() {
+  if (!spreadReadingTemplate) {
+    showToast('请先选择一个牌阵模板');
+    return;
+  }
+
+  const topic = document.getElementById('spreadTopicInput').value.trim();
+  spreadReadingTopic = topic;
+
+  const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+  let cardIdx = 0;
+
+  spreadReadingCells.forEach(cell => {
+    cell.card = {
+      ...shuffled[cardIdx % shuffled.length],
+      isReversed: Math.random() > 0.5
+    };
+    cardIdx++;
+  });
+
+  const grid = document.getElementById('spreadReadingGrid');
+  const cells = grid.querySelectorAll('.grid-cell');
+  cells.forEach((cell, idx) => {
+    const data = spreadReadingCells[idx];
+    if (!data || !data.card) return;
+    cell.className = 'grid-cell filled';
+    cell.innerHTML = `
+      <div class="cell-card-mini">${data.card.emoji}</div>
+      <div class="cell-name-input" style="pointer-events:none;">${data.name || '位置' + (idx + 1)}</div>
+      <button class="cell-remove" onclick="event.stopPropagation();viewSpreadReadingCard(${idx})">👁</button>
+    `;
+    cell.onclick = () => viewSpreadReadingCard(idx);
+  });
+
+  spawnParticles();
+
+  const resultArea = document.getElementById('spreadResultArea');
+  resultArea.innerHTML = `
+    <div class="card-interpretation" style="margin-top:16px;">
+      ${spreadReadingCells.map((cell, i) => {
+        if (!cell.card) return '';
+        const card = cell.card;
+        return `
+          <div style="margin-bottom:18px;">
+            <div class="card-title">${cell.name || '位置 ' + (i + 1)} · ${card.name}</div>
+            ${getOrientationBadge(card.isReversed)}
+            <div class="meaning-text">${getCardMeaning(card)}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  resultArea.classList.add('show');
+
+  saveSpreadReadingToHistory();
+  showToast('占卜完成！已保存到历史记录');
+}
+
+function viewSpreadReadingCard(idx) {
+  const cell = spreadReadingCells[idx];
   if (!cell || !cell.card) return;
 
   const card = cell.card;
@@ -1541,12 +1966,13 @@ function showSpreadCardDetail(idx) {
   content.innerHTML = `
     <h2>${posName}</h2>
     <div class="daily-card" style="margin-bottom: 0;">
-      ${renderCardElement(card, true, card.reversed)}
+      ${renderCardElement(card, true, card.isReversed)}
       <div style="margin-top:8px;">
-        <span class="orientation-badge ${card.reversed ? 'reversed' : 'upright'}">${card.reversed ? '逆位' : '正位'}</span>
+        ${getOrientationBadge(card.isReversed)}
       </div>
+      <div style="color:var(--gold-light);font-weight:700;font-size:1.1em;">${card.name}</div>
       <div style="color:var(--text);font-size:0.9em;line-height:1.6;margin-top:8px;">
-        ${card.reversed ? card.reversed : card.meaning}
+        ${getCardMeaning(card)}
       </div>
     </div>
     <button class="close-btn" onclick="closeModal()">关闭</button>
@@ -1554,100 +1980,26 @@ function showSpreadCardDetail(idx) {
   modal.style.display = 'flex';
 }
 
-function saveSpread() {
-  const name = prompt('请为这个牌阵命名：', currentSpread?.name || '我的自定义牌阵');
-  if (!name) return;
+function saveSpreadReadingToHistory() {
+  const records = getHistory();
+  const templateName = spreadReadingTemplate ? spreadReadingTemplate.name : '自定义牌阵';
 
-  const spreads = getSavedSpreads();
-  const spreadData = {
-    name,
-    rows: parseInt(document.getElementById('gridRows').value) || 2,
-    cols: parseInt(document.getElementById('gridCols').value) || 3,
-    cells: spreadCells.map(c => ({
-      name: c.name,
-      card: c.card ? { name: c.card.name, emoji: c.card.emoji, reversed: c.card.reversed, meaning: c.card.reversed ? c.card.reversed : c.card.meaning } : null
-    })),
-    savedAt: new Date().toLocaleString('zh-CN')
-  };
-
-  if (currentSpread && currentSpread.name === name) {
-    const idx = spreads.findIndex(s => s.name === name);
-    if (idx >= 0) spreads[idx] = spreadData;
-  } else {
-    spreads.unshift(spreadData);
-  }
-
-  localStorage.setItem('tarotSpreads', JSON.stringify(spreads));
-  currentSpread = spreadData;
-  showToast('牌阵已保存：' + name);
-  renderSavedSpreads();
-}
-
-function getSavedSpreads() {
-  try { return JSON.parse(localStorage.getItem('tarotSpreads') || '[]'); }
-  catch { return []; }
-}
-
-function loadSpread(index) {
-  const spreads = getSavedSpreads();
-  if (index < 0 || index >= spreads.length) return;
-  const spread = spreads[index];
-  currentSpread = spread;
-
-  document.getElementById('gridRows').value = spread.rows;
-  document.getElementById('gridCols').value = spread.cols;
-  buildSpreadGrid();
-
-  spread.cells.forEach((c, i) => {
-    if (i < spreadCells.length) {
-      spreadCells[i].name = c.name || '';
-      if (c.card) {
-        const full = ALL_CARDS.find(fc => fc.name === c.card.name);
-        if (full) {
-          spreadCells[i].card = { ...full, reversed: c.card.reversed };
-        }
-      }
-    }
+  records.unshift({
+    id: Date.now(),
+    time: new Date().toLocaleString('zh-CN'),
+    mode: '自定义牌阵',
+    spreadLabel: templateName,
+    topic: spreadReadingTopic || null,
+    cards: spreadReadingCells.filter(c => c.card).map(c => ({
+      name: c.card.name,
+      emoji: c.card.emoji,
+      isReversed: c.card.isReversed,
+      position: c.name || '位置',
+      meaning: getCardMeaning(c.card)
+    }))
   });
-  renderSpreadCells();
-  showToast('已加载牌阵：' + spread.name);
-}
-
-function deleteCurrentSpread() {
-  if (!currentSpread) { showToast('没有已加载的牌阵'); return; }
-  if (confirm(`确定删除牌阵「${currentSpread.name}」吗？`)) {
-    const spreads = getSavedSpreads().filter(s => s.name !== currentSpread.name);
-    localStorage.setItem('tarotSpreads', JSON.stringify(spreads));
-    currentSpread = null;
-    buildSpreadGrid();
-    showToast('牌阵已删除');
-    renderSavedSpreads();
-  }
-}
-
-function toggleSavedSpreads() {
-  const el = document.getElementById('savedSpreadsList');
-  if (el.style.display === 'none') {
-    renderSavedSpreads();
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
-}
-
-function renderSavedSpreads() {
-  const el = document.getElementById('savedSpreadsList');
-  const spreads = getSavedSpreads();
-  if (spreads.length === 0) {
-    el.innerHTML = '<div style="color:var(--text-dim);text-align:center;padding:10px;">暂无保存的牌阵</div>';
-    return;
-  }
-  el.innerHTML = '<h4>已保存的牌阵</h4>' + spreads.map((s, i) => `
-    <div class="saved-spread-item" onclick="loadSpread(${i})">
-      <span>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></span>
-      <span style="color:var(--text-dim);font-size:0.75em;">${s.savedAt}</span>
-    </div>
-  `).join('');
+  if (records.length > 100) records.length = 100;
+  localStorage.setItem('tarotHistory', JSON.stringify(records));
 }
 
 // ==================== CARD BACK ====================
@@ -1673,10 +2025,10 @@ function checkDailyDraw() {
   if (lastDraw === today) return;
 
   const dailyCard = ALL_CARDS[Math.floor(Math.random() * ALL_CARDS.length)];
-  const reversed = Math.random() > 0.5;
+  const isReversed = Math.random() > 0.5;
   const saved = {
     date: today,
-    card: { name: dailyCard.name, emoji: dailyCard.emoji, reversed, meaning: reversed ? dailyCard.reversed : dailyCard.meaning }
+    card: { name: dailyCard.name, emoji: dailyCard.emoji, isReversed, meaning: isReversed ? dailyCard.reversed : dailyCard.meaning }
   };
   localStorage.setItem('dailyDrawDate', today);
   localStorage.setItem('dailyDrawCard', JSON.stringify(saved.card));
@@ -1687,33 +2039,33 @@ function checkDailyDraw() {
     <h2>🌟 今日塔罗指引</h2>
     <p style="color:var(--text-dim);margin-bottom:8px;">${today}</p>
     <div class="daily-card">
-      ${renderCardElement(dailyCard, true, reversed)}
+      ${renderCardElement(dailyCard, true, isReversed)}
       <div style="margin-top:8px;">
-        <span class="orientation-badge ${reversed ? 'reversed' : 'upright'}">${reversed ? '逆位' : '正位'}</span>
+        ${getOrientationBadge(isReversed)}
       </div>
       <div style="color:var(--gold-light);font-weight:700;font-size:1.1em;">${dailyCard.name}</div>
       <div style="color:var(--text);font-size:0.9em;line-height:1.6;">
-        ${reversed ? dailyCard.reversed : dailyCard.meaning}
+        ${isReversed ? dailyCard.reversed : dailyCard.meaning}
       </div>
     </div>
     <button class="close-btn" onclick="closeModal()">我知道了</button>
   `;
   modal.style.display = 'flex';
 
-  sendNotification(dailyCard, reversed);
+  sendNotification(dailyCard, isReversed);
 }
 
-function sendNotification(card, reversed) {
+function sendNotification(card, isReversed) {
   if (!('Notification' in window)) return;
 
   if (Notification.permission === 'granted') {
     new Notification('🔮 今日塔罗指引', {
-      body: `${card.name}（${reversed ? '逆位' : '正位'}）—— ${reversed ? card.reversed.substring(0, 40) + '...' : card.meaning.substring(0, 40) + '...'}`,
+      body: `${card.name}（${isReversed ? '逆位' : '正位'}）—— ${isReversed ? card.reversed.substring(0, 40) + '...' : card.meaning.substring(0, 40) + '...'}`,
       icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔮</text></svg>'
     });
   } else if (Notification.permission === 'default') {
     Notification.requestPermission().then(perm => {
-      if (perm === 'granted') sendNotification(card, reversed);
+      if (perm === 'granted') sendNotification(card, isReversed);
     });
   }
 }
