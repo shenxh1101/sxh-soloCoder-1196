@@ -545,6 +545,116 @@ body {
   margin-top: 8px;
 }
 
+/* ===== HISTORY FILTER ===== */
+.history-filter {
+  max-width: 600px;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.history-filter .filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(212,168,67,0.25);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.82em;
+  font-family: inherit;
+  transition: var(--transition);
+}
+.history-filter .filter-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+.history-filter .filter-btn.active {
+  background: rgba(212,168,67,0.15);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+.history-filter .filter-search {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(212,168,67,0.25);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82em;
+  outline: none;
+  width: 160px;
+}
+.history-filter .filter-search:focus { border-color: var(--gold); }
+.history-filter .filter-search::placeholder { color: var(--text-dim); }
+.history-filter .filter-count {
+  color: var(--text-dim);
+  font-size: 0.78em;
+}
+
+/* ===== SUMMARY BOX ===== */
+.summary-box {
+  background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(140,100,220,0.08));
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 20px auto;
+  max-width: 600px;
+  position: relative;
+}
+.summary-box::before {
+  content: '📖 整体解读';
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  background: var(--bg-panel);
+  padding: 2px 14px;
+  color: var(--gold-light);
+  font-size: 0.85em;
+  font-weight: 700;
+  border-radius: 12px;
+  letter-spacing: 1px;
+}
+.summary-box .summary-text {
+  color: var(--text);
+  font-size: 0.95em;
+  line-height: 1.9;
+  margin-top: 4px;
+}
+
+/* ===== POSITION DESC IN INTERPRETATION ===== */
+.position-desc {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  background: rgba(212,168,67,0.06);
+  border-radius: 8px;
+  border-left: 2px solid var(--gold);
+}
+
+/* ===== CELL DESCRIPTION INPUT ===== */
+.grid-cell .cell-desc-input {
+  width: 90%;
+  padding: 3px 6px;
+  border: 1px solid rgba(140,100,220,0.3);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.25);
+  color: var(--text-dim);
+  text-align: center;
+  font-size: 0.68em;
+  font-family: inherit;
+  resize: none;
+  margin-top: 2px;
+  height: 28px;
+}
+.grid-cell .cell-desc-input::placeholder {
+  color: rgba(153,136,184,0.5);
+}
+.grid-cell .cell-desc-input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
 /* ===== HISTORY PANEL ===== */
 .history-list {
   max-width: 600px;
@@ -1104,6 +1214,14 @@ body {
   <!-- ===== HISTORY PANEL ===== -->
   <section class="panel" id="panel-history">
     <h2 class="section-title">📜 占卜历史</h2>
+    <div class="history-filter" id="historyFilter">
+      <button class="filter-btn active" data-filter="all" onclick="setHistoryFilter('all', this)">全部</button>
+      <button class="filter-btn" data-filter="单张牌" onclick="setHistoryFilter('单张牌', this)">🃏 单张牌</button>
+      <button class="filter-btn" data-filter="三张牌" onclick="setHistoryFilter('三张牌', this)">🎴 三张牌</button>
+      <button class="filter-btn" data-filter="自定义牌阵" onclick="setHistoryFilter('自定义牌阵', this)">✨ 自定义</button>
+      <input type="text" class="filter-search" id="historySearch" placeholder="🔍 搜索主题..." oninput="renderHistory()" />
+      <span class="filter-count" id="historyCount"></span>
+    </div>
     <div class="history-list" id="historyList"></div>
     <button class="clear-btn" onclick="clearHistory()">🗑️ 清除所有记录</button>
   </section>
@@ -1316,6 +1434,7 @@ let spreadMode = 'design';
 let spreadReadingTemplate = null;
 let spreadReadingCells = [];
 let spreadReadingTopic = '';
+let historyFilter = 'all';
 
 // ==================== INIT ====================
 function init() {
@@ -1395,6 +1514,47 @@ function getCardMeaning(card) {
 
 function getOrientationBadge(isReversed) {
   return `<span class="orientation-badge ${isReversed ? 'reversed-badge' : 'upright'}">${isReversed ? '逆位' : '正位'}</span>`;
+}
+
+// ==================== OVERALL INTERPRETATION SUMMARY ====================
+function generateSummary(topic, spreadLabel, cards) {
+  const topicText = topic ? `关于「${topic}」的问题` : '关于你心中的疑问';
+  let summary = `你咨询了${topicText}，使用「${spreadLabel}」牌阵进行占卜。\n\n`;
+
+  const cardDetails = cards.map((c, i) => {
+    const pos = c.position || '启示';
+    const dir = c.isReversed ? '（逆位）' : '（正位）';
+    return `「${pos}」位置出现了${c.emoji}【${c.name}】${dir}，这张牌在这里意味着：${c.meaning}`;
+  });
+
+  summary += cardDetails.join('\n\n');
+
+  const uprightCount = cards.filter(c => !c.isReversed).length;
+  const reversedCount = cards.filter(c => c.isReversed).length;
+
+  summary += '\n\n---\n\n';
+
+  let overall = '';
+  if (cards.length === 1) {
+    const c = cards[0];
+    if (c.isReversed) {
+      overall = `整体而言，这张牌以逆位出现，提示当前可能存在阻碍或需要反思之处。建议你放慢脚步，审视内心真正的需求，不要急于做出判断。`;
+    } else {
+      overall = `整体而言，这张牌以正位呈现，是一个积极的信号。它鼓励你保持信心，勇敢面对当前的境遇，宇宙正在为你铺路。`;
+    }
+  } else {
+    if (reversedCount === 0) {
+      overall = `整体来看，${cards.length}张牌全部以正位呈现，能量非常积极。这表明你的处境整体向好，各方面都在朝着有利的方向发展。建议你顺势而为，把握当下的良好时机。`;
+    } else if (uprightCount === 0) {
+      overall = `整体来看，${cards.length}张牌全部以逆位呈现，提示当前可能面临较多挑战。但这并非坏事——逆位牌往往揭示需要关注的内在课题。建议你静心反思，逐一化解眼前的阻碍。`;
+    } else {
+      const dominant = uprightCount >= reversedCount ? '正位牌居多，整体趋势向好' : '逆位牌居多，提示需要更多内省';
+      overall = `整体来看，${cards.length}张牌中正位${uprightCount}张、逆位${reversedCount}张，${dominant}。牌面呈现出一种动态平衡的状态，既有助力也有挑战。建议你既珍视有利因素，也正视需要改进之处，在行动与反思之间找到平衡。`;
+    }
+  }
+
+  summary += overall;
+  return summary;
 }
 
 // ==================== DECK BACKS ====================
@@ -1516,6 +1676,17 @@ function performDraw() {
 
   setTimeout(() => {
     const interp = document.getElementById('interpretation');
+    const topic = currentTopic || document.getElementById('topicInput').value.trim();
+    const spreadLabel = currentMode === 'three'
+      ? THREE_CARD_SPREADS[threeCardSpreadType].name
+      : '单张牌';
+    const summaryCards = drawnCards.map((c, i) => ({
+      ...c,
+      position: positions[i],
+      meaning: getCardMeaning(c)
+    }));
+    const summary = generateSummary(topic, spreadLabel, summaryCards);
+
     interp.style.display = 'block';
     interp.innerHTML = drawnCards.map((card, i) => `
       <div style="margin-bottom:18px;">
@@ -1523,7 +1694,11 @@ function performDraw() {
         ${getOrientationBadge(card.isReversed)}
         <div class="meaning-text">${getCardMeaning(card)}</div>
       </div>
-    `).join('');
+    `).join('') + `
+      <div class="summary-box">
+        <div class="summary-text">${summary.replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
   }, 600);
 
   saveReading(positions);
@@ -1566,19 +1741,24 @@ function saveReading(positions) {
     ? THREE_CARD_SPREADS[threeCardSpreadType].name
     : '单张牌';
 
+  const summaryCards = drawnCards.map((c, i) => ({
+    name: c.name,
+    emoji: c.emoji,
+    isReversed: c.isReversed,
+    position: positions ? positions[i] : '启示',
+    meaning: getCardMeaning(c)
+  }));
+
+  const summary = generateSummary(topic, spreadLabel, summaryCards);
+
   records.unshift({
     id: Date.now(),
     time: new Date().toLocaleString('zh-CN'),
     mode: currentMode === 'three' ? '三张牌' : '单张牌',
     spreadLabel: spreadLabel,
     topic: topic || null,
-    cards: drawnCards.map((c, i) => ({
-      name: c.name,
-      emoji: c.emoji,
-      isReversed: c.isReversed,
-      position: positions ? positions[i] : '启示',
-      meaning: getCardMeaning(c)
-    }))
+    summary: summary,
+    cards: summaryCards
   });
   if (records.length > 100) records.length = 100;
   localStorage.setItem('tarotHistory', JSON.stringify(records));
@@ -1592,9 +1772,24 @@ function getHistory() {
 
 function renderHistory() {
   const container = document.getElementById('historyList');
-  const records = getHistory();
+  const countEl = document.getElementById('historyCount');
+  let records = getHistory();
+
+  const searchTerm = (document.getElementById('historySearch')?.value || '').trim().toLowerCase();
+  if (searchTerm) {
+    records = records.filter(r => (r.topic || '').toLowerCase().includes(searchTerm));
+  }
+
+  if (historyFilter !== 'all') {
+    records = records.filter(r => r.mode === historyFilter);
+  }
+
+  if (countEl) {
+    countEl.textContent = records.length > 0 ? `共 ${records.length} 条` : '';
+  }
+
   if (records.length === 0) {
-    container.innerHTML = '<div class="history-empty">🔮 还没有占卜记录，快去抽一张牌吧！</div>';
+    container.innerHTML = '<div class="history-empty">🔮 还没有匹配的占卜记录</div>';
     return;
   }
   container.innerHTML = records.map(r => `
@@ -1605,6 +1800,14 @@ function renderHistory() {
       <div class="history-cards">${r.cards.map(c => `${c.emoji} ${c.name}(${(c.isReversed || c.reversed) ? '逆' : '正'})`).join(' · ')}</div>
     </div>
   `).join('');
+}
+
+function setHistoryFilter(filter, btn) {
+  historyFilter = filter;
+  document.querySelectorAll('#historyFilter .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('historySearch').value = '';
+  renderHistory();
 }
 
 function viewHistoryDetail(id) {
@@ -1640,14 +1843,23 @@ function viewHistoryDetail(id) {
       `).join('')}
     </div>
     <div class="card-interpretation">
-      ${drawnCards.map((card, i) => `
-        <div style="margin-bottom:18px;">
-          <div class="card-title">${record.cards[i].position} · ${card.name}</div>
-          ${getOrientationBadge(card.isReversed)}
-          <div class="meaning-text">${getCardMeaning(card)}</div>
-        </div>
-      `).join('')}
+      ${drawnCards.map((card, i) => {
+        const desc = record.cards[i].description;
+        return `
+          <div style="margin-bottom:18px;">
+            <div class="card-title">${record.cards[i].position} · ${card.name}</div>
+            ${desc ? `<div class="position-desc">💡 ${desc}</div>` : ''}
+            ${getOrientationBadge(card.isReversed)}
+            <div class="meaning-text">${getCardMeaning(card)}</div>
+          </div>
+        `;
+      }).join('')}
     </div>
+    ${record.summary ? `
+      <div class="summary-box">
+        <div class="summary-text">${record.summary.replace(/\n/g, '<br>')}</div>
+      </div>
+    ` : ''}
   `;
   resultArea.classList.add('show');
 }
@@ -1697,7 +1909,7 @@ function buildSpreadGrid() {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c;
-      spreadCells.push({ row: r, col: c, name: '' });
+      spreadCells.push({ row: r, col: c, name: '', description: '' });
       const cell = document.createElement('div');
       cell.className = 'grid-cell';
       cell.dataset.index = idx;
@@ -1725,6 +1937,8 @@ function buildSpreadGrid() {
         <div class="cell-empty-text">拖拽调整位置</div>
         <input class="cell-name-input" placeholder="位置名称" value="${spreadCells[idx].name}"
           onchange="updateCellName(${idx}, this.value)" onclick="event.stopPropagation()" />
+        <textarea class="cell-desc-input" placeholder="牌位说明（可选）"
+          onchange="updateCellDesc(${idx}, this.value)" onclick="event.stopPropagation()">${spreadCells[idx].description || ''}</textarea>
       `;
 
       grid.appendChild(cell);
@@ -1741,12 +1955,20 @@ function renderDesignCells() {
     if (!data) return;
     const nameInput = cell.querySelector('.cell-name-input');
     if (nameInput) nameInput.value = data.name;
+    const descInput = cell.querySelector('.cell-desc-input');
+    if (descInput) descInput.value = data.description || '';
   });
 }
 
 function updateCellName(idx, value) {
   if (spreadCells[idx]) {
     spreadCells[idx].name = value;
+  }
+}
+
+function updateCellDesc(idx, value) {
+  if (spreadCells[idx]) {
+    spreadCells[idx].description = value;
   }
 }
 
@@ -1758,6 +1980,12 @@ function swapSpreadCells(fromIdx, toIdx) {
 }
 
 function saveSpreadTemplate() {
+  const namedCells = spreadCells.filter(c => c.name.trim());
+  if (namedCells.length === 0) {
+    showToast('请至少为一个位置命名');
+    return;
+  }
+
   const name = prompt('请为这个牌阵模板命名：', currentSpread?.name || '我的自定义牌阵');
   if (!name) return;
 
@@ -1766,7 +1994,10 @@ function saveSpreadTemplate() {
     name,
     rows: parseInt(document.getElementById('gridRows').value) || 2,
     cols: parseInt(document.getElementById('gridCols').value) || 3,
-    cells: spreadCells.map(c => ({ name: c.name })),
+    cells: spreadCells.map(c => ({
+      name: c.name,
+      description: c.description || ''
+    })),
     savedAt: new Date().toLocaleString('zh-CN')
   };
 
@@ -1801,6 +2032,7 @@ function loadSpreadTemplate(index) {
   template.cells.forEach((c, i) => {
     if (i < spreadCells.length) {
       spreadCells[i].name = c.name || '';
+      spreadCells[i].description = c.description || '';
     }
   });
   renderDesignCells();
@@ -1838,7 +2070,10 @@ function renderSavedTemplates() {
   }
   el.innerHTML = '<h4>已保存的模板</h4>' + templates.map((s, i) => `
     <div class="saved-spread-item" onclick="loadSpreadTemplate(${i})">
-      <span>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></span>
+      <div>
+        <div>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></div>
+        <div style="color:var(--text-dim);font-size:0.7em;margin-top:2px;">${s.cells.filter(c => c.name).map(c => c.name).join(' · ') || '未命名'}</div>
+      </div>
       <span style="color:var(--text-dim);font-size:0.75em;">${s.savedAt}</span>
     </div>
   `).join('');
@@ -1857,8 +2092,11 @@ function renderReadingTemplates() {
   }
   el.innerHTML = '<h4>选择牌阵模板开始占卜</h4>' + templates.map((s, i) => `
     <div class="saved-spread-item" onclick="selectTemplateForReading(${i})" style="${spreadReadingTemplate && spreadReadingTemplate.name === s.name ? 'border-color:var(--gold);background:rgba(212,168,67,0.1);' : ''}">
-      <span>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></span>
-      <span style="color:var(--text-dim);font-size:0.7em;">${s.cells.filter(c => c.name).map(c => c.name).join(' · ') || '未命名'}</span>
+      <div>
+        <div>✨ ${s.name} <span style="color:var(--text-dim);font-size:0.75em;">${s.rows}×${s.cols}</span></div>
+        <div style="color:var(--text-dim);font-size:0.7em;margin-top:2px;">${s.cells.filter(c => c.name).map(c => c.name).join(' · ') || '未命名'}</div>
+      </div>
+      <span style="color:var(--text-dim);font-size:0.7em;">${s.cells.filter(c => c.name).length}个牌位</span>
     </div>
   `).join('');
 }
@@ -1871,21 +2109,26 @@ function selectTemplateForReading(index) {
 
   const grid = document.getElementById('spreadReadingGrid');
   const template = spreadReadingTemplate;
-  grid.style.gridTemplateColumns = `repeat(${template.cols}, 120px)`;
-  grid.style.gridTemplateRows = `repeat(${template.rows}, 180px)`;
+  const validCells = template.cells.filter(c => c.name.trim());
+  const cols = template.cols;
+
+  grid.style.gridTemplateColumns = `repeat(${cols}, 120px)`;
+  grid.style.gridTemplateRows = '';
   grid.innerHTML = '';
 
-  spreadReadingCells = template.cells.map((c, idx) => ({
+  spreadReadingCells = validCells.map((c, idx) => ({
     name: c.name,
+    description: c.description || '',
     card: null,
     index: idx
   }));
 
-  template.cells.forEach((c, idx) => {
+  validCells.forEach((c, idx) => {
     const cell = document.createElement('div');
     cell.className = 'grid-cell';
     cell.innerHTML = `
-      <div class="cell-empty-text">${c.name || '位置 ' + (idx + 1)}</div>
+      <div class="cell-empty-text">${c.name}</div>
+      ${c.description ? `<div style="font-size:0.65em;color:var(--text-dim);margin-top:2px;text-align:center;">${c.description}</div>` : ''}
     `;
     grid.appendChild(cell);
   });
@@ -1924,7 +2167,8 @@ function drawSpreadReading() {
     cell.className = 'grid-cell filled';
     cell.innerHTML = `
       <div class="cell-card-mini">${data.card.emoji}</div>
-      <div class="cell-name-input" style="pointer-events:none;">${data.name || '位置' + (idx + 1)}</div>
+      <div class="cell-name-input" style="pointer-events:none;">${data.name}</div>
+      ${data.description ? `<div style="font-size:0.6em;color:var(--text-dim);">${data.description}</div>` : ''}
       <button class="cell-remove" onclick="event.stopPropagation();viewSpreadReadingCard(${idx})">👁</button>
     `;
     cell.onclick = () => viewSpreadReadingCard(idx);
@@ -1933,6 +2177,16 @@ function drawSpreadReading() {
   spawnParticles();
 
   const resultArea = document.getElementById('spreadResultArea');
+  const summaryCards = spreadReadingCells.filter(c => c.card).map(c => ({
+    name: c.card.name,
+    emoji: c.card.emoji,
+    isReversed: c.card.isReversed,
+    position: c.name,
+    description: c.description,
+    meaning: getCardMeaning(c.card)
+  }));
+  const summary = generateSummary(topic, spreadReadingTemplate.name, summaryCards);
+
   resultArea.innerHTML = `
     <div class="card-interpretation" style="margin-top:16px;">
       ${spreadReadingCells.map((cell, i) => {
@@ -1940,17 +2194,21 @@ function drawSpreadReading() {
         const card = cell.card;
         return `
           <div style="margin-bottom:18px;">
-            <div class="card-title">${cell.name || '位置 ' + (i + 1)} · ${card.name}</div>
+            <div class="card-title">${cell.name} · ${card.name}</div>
+            ${cell.description ? `<div class="position-desc">💡 ${cell.description}</div>` : ''}
             ${getOrientationBadge(card.isReversed)}
             <div class="meaning-text">${getCardMeaning(card)}</div>
           </div>
         `;
       }).join('')}
     </div>
+    <div class="summary-box">
+      <div class="summary-text">${summary.replace(/\n/g, '<br>')}</div>
+    </div>
   `;
   resultArea.classList.add('show');
 
-  saveSpreadReadingToHistory();
+  saveSpreadReadingToHistory(summary);
   showToast('占卜完成！已保存到历史记录');
 }
 
@@ -1960,11 +2218,13 @@ function viewSpreadReadingCard(idx) {
 
   const card = cell.card;
   const posName = cell.name || '位置 ' + (idx + 1);
+  const posDesc = cell.description || '';
 
   const modal = document.getElementById('dailyModal');
   const content = document.getElementById('dailyModalContent');
   content.innerHTML = `
     <h2>${posName}</h2>
+    ${posDesc ? `<div style="color:var(--text-dim);font-size:0.85em;font-style:italic;margin-bottom:12px;">💡 ${posDesc}</div>` : ''}
     <div class="daily-card" style="margin-bottom: 0;">
       ${renderCardElement(card, true, card.isReversed)}
       <div style="margin-top:8px;">
@@ -1980,7 +2240,7 @@ function viewSpreadReadingCard(idx) {
   modal.style.display = 'flex';
 }
 
-function saveSpreadReadingToHistory() {
+function saveSpreadReadingToHistory(summary) {
   const records = getHistory();
   const templateName = spreadReadingTemplate ? spreadReadingTemplate.name : '自定义牌阵';
 
@@ -1990,11 +2250,13 @@ function saveSpreadReadingToHistory() {
     mode: '自定义牌阵',
     spreadLabel: templateName,
     topic: spreadReadingTopic || null,
+    summary: summary,
     cards: spreadReadingCells.filter(c => c.card).map(c => ({
       name: c.card.name,
       emoji: c.card.emoji,
       isReversed: c.card.isReversed,
-      position: c.name || '位置',
+      position: c.name,
+      description: c.description || '',
       meaning: getCardMeaning(c.card)
     }))
   });
